@@ -32,6 +32,9 @@ app.use('/api/messages', messageRoute);
 var port = process.env.PORT || 4000;
 const ip = '192.168.1.117';
 
-app.listen(port, ip, () =>
-  console.log(`Server is running on http://${ip}:${port}`)
-);
+// app.listen(port, ip, () =>
+//   console.log(`Server is running on http://${ip}:${port}`)
+// );
+
+app.get('/', (req, res) => res.send('Hello World!'))
+app.listen(process.env.PORT || port, () => console.log(`Example app listening on port ${process.env.PORT}!`))
