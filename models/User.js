@@ -5,15 +5,15 @@ const UserSchema = new mongoose.Schema(
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        location: { type: String, required: false, default: "Shanghai"},
+        location: { type: String, required: false, default: "India"},
         phone: { type: String, required: false , default:"1234567890"},
         isAdmin: {
             type: Boolean,
-            default: false
+            default: true
         },
         isAgent: {
             type: Boolean,
-            default: false
+            default: true
         },
         skills: {
             type: Array,
@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
         profile: {
             type: String,
             require: true,
-            default: "https://d326fntlu7tb1e.cloudfront.net/uploads/4821d814-ac87-4b22-aa80-ac7336916c9a-403017_avatar_default_head_person_unknown_icon.png"
+            default: "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-Clip-Art-Transparent-PNG.png"
         },
 
     }, { timestamps: true }

@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
             next();
         });
     } else {
-        return res.status(401).json({status: false, message: "You do not have permission to access this route"});
+        return res.status(401).json({status: false, message: "You do not have permission to access this route, Incorrect Token"});
     }
 };
 
@@ -23,7 +23,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
         if (req.user.id || req.user.isAdmin) {
             next();
         } else {
-           return res.status(403).json({status: false, message: "You do not have permission to access this route"});
+           return res.status(403).json({status: false, message: "You do not have permission to access this route, Not admin and incorrect user"});
         }
     });
 };
@@ -33,7 +33,7 @@ const verifyTokenAndAdmin = (req, res, next) => {
         if (req.user.isAdmin) {
             next();
         } else {
-            return res.status(403).json({status: false, message: "You do not have permission to access this route"});
+            return res.status(403).json({status: false, message: "You do not have permission to access this route, Not Admin"});
         }
     });
 };
@@ -44,7 +44,7 @@ const verifyTokenAndAgent = (req, res, next) => {
         if (req.user.isAgent || req.user.isAdmin) {
             next();
         } else {
-           return res.status(403).json({status: false, message: "You do not have permission to access this route"});
+           return res.status(403).json({status: false, message: "You do not have permission to access this route, incorrecr agent/Admin"});
         }
     });
 };
