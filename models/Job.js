@@ -12,7 +12,7 @@ const JobSchema = new mongoose.Schema(
         contract: { type: String, required: true },
         requirements: {
             type: Array,
-            required: true
+            required: false
         },
         imageUrl: {
             type: String,

@@ -87,10 +87,18 @@ module.exports = {
         }
     },
 
-
-
-
-
-
-
+    getUserJobs: async (req, res) => {
+        try {
+            const userId = req.params.userId; // Assuming userId is passed as a route parameter
+            const jobs = await Job.find({ userId }); // Filter jobs by userId
+    
+            if (jobs.length === 0) {
+                return res.status(404).json({ message: "No jobs found for this user" });
+            }
+    
+            res.status(200).json(jobs);
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    },
 }
