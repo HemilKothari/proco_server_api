@@ -86,19 +86,29 @@ module.exports = {
             res.status(500).json(err);
         }
     },
-
     getUserJobs: async (req, res) => {
+        console.log('getUserJobs function called with agentId:', req.params.id); // Debug log
         try {
-            const userId = req.params.userId; // Assuming userId is passed as a route parameter
-            const jobs = await Job.find({ userId }); // Filter jobs by userId
+            // Ensure agentId is in correct format
+            const agentId = req.params.agentId;
     
-            if (jobs.length === 0) {
-                return res.status(404).json({ message: "No jobs found for this user" });
+            // Find jobs associated with the provided agentId
+            const jobs = await Job.find({ agentId: agentId });
+    
+            // If no jobs are found, return a 404 response
+            if (!jobs.length) {
+                console.log(`No jobs found for agentId: ${agentId}`); // Debug log
+                return res.status(404).json({ message: "No jobs found for this user." });
             }
     
+            // Return the found jobs
             res.status(200).json(jobs);
         } catch (error) {
-            res.status(500).json(error);
+            // Log the error for debugging
+            console.error('Error fetching user jobs:', error);
+    
+            // Return a 500 Internal Server Error response
+            res.status(500).json({ error: "Internal server error." });
         }
-    },
+    }, 
 }
