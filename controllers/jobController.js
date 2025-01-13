@@ -111,4 +111,26 @@ module.exports = {
             res.status(500).json({ error: "Internal server error." });
         }
     }, 
+    filterJobs: async (req, res) => {
+        try {
+            const filterCriteria = req.body; // Assuming filters are passed in the request body
+            
+            // Use Mongoose's `find` method to filter jobs based on the criteria
+            const filteredJobs = await Job.find(filterCriteria);
+    
+            if (!filteredJobs.length) {
+                return res.status(404).json({ message: "No jobs match the filter criteria." });
+            }
+    
+            // Return the filtered jobs
+            res.status(200).json(filteredJobs);
+        } catch (error) {
+            // Log the error for debugging
+            console.error('Error filtering jobs:', error);
+    
+            // Return a 500 Internal Server Error response
+            res.status(500).json({ error: "Internal server error." });
+        }
+    },
+    
 }

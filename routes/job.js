@@ -5,6 +5,8 @@ const { verifyTokenAndAgent } = require("../middleware/verifyToken");
 
 // CREATE JOB
 router.post("/", verifyTokenAndAgent, jobController.createJob);
+// FILTER JOBS
+router.post("/filter", verifyTokenAndAgent, jobController.filterJobs);
 
 
 // UPADATE JOB
