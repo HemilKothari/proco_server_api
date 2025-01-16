@@ -112,7 +112,7 @@ module.exports = {
         }
     }, 
    
-    filterJobs: async (req, res) => {
+   /*filterJobs: async (req, res) => {
         try {
             const { areas, opportunityTypes, locationType, distance, state, country } = req.body;
 
@@ -152,7 +152,7 @@ module.exports = {
             res.status(500).json({ error: "Internal server error." });
         }
     },
-
+*/
     // Other functions remain unchanged...
 }
 
