@@ -9,6 +9,8 @@ const jobRoute = require('./routes/job');
 const bookmarkRoute = require('./routes/bookmark');
 const chatRoute = require('./routes/chat');
 const messageRoute = require('./routes/messages');
+const filterRoute= require('./routes/filter');
+
 
 dotenv.config();
 
@@ -28,6 +30,7 @@ app.use('/api/jobs', jobRoute);
 app.use('/api/bookmarks', bookmarkRoute);
 app.use('/api/chats', chatRoute);
 app.use('/api/messages', messageRoute);
+app.use('/api/filters',filterRoute);
 
 var port = process.env.PORT || 4000;
 const ip = '192.168.1.117';

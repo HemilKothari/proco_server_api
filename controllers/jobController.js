@@ -112,48 +112,7 @@ module.exports = {
         }
     }, 
    
-   /*filterJobs: async (req, res) => {
-        try {
-            const { areas, opportunityTypes, locationType, distance, state, country } = req.body;
-
-            // Build the query dynamically based on the filters
-            const query = {};
-
-            if (areas && areas.length > 0) {
-                query.area = { $in: areas };
-            }
-
-            if (opportunityTypes && opportunityTypes.length > 0) {
-                query.opportunityType = { $in: opportunityTypes };
-            }
-
-            if (locationType === "City" && distance) {
-                query.distance = { $lte: distance }; // Ensure to have a distance field in the schema
-            }
-
-            if (locationType === "State" && state) {
-                query.state = state;
-            }
-
-            if (locationType === "Country" && country) {
-                query.country = country;
-            }
-
-            // Execute the query
-            const filteredJobs = await Job.find(query);
-
-            if (!filteredJobs.length) {
-                return res.status(404).json({ message: "No jobs found matching the filters." });
-            }
-
-            res.status(200).json(filteredJobs);
-        } catch (error) {
-            console.error("Error filtering jobs:", error);
-            res.status(500).json({ error: "Internal server error." });
-        }
-    },
-*/
-    // Other functions remain unchanged...
+   
 }
 
     
