@@ -17,7 +17,7 @@ router.get("/:id", filterController.getFilterById);
 
 // GET ALL FILTERS
 //router.get("/",verifyTokenAndAgent, filterController.getAllFilters);
-router.get("/", filterController.getFilters);
+router.get("/:id", filterController.getFilters);
 
 
 

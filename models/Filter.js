@@ -37,6 +37,11 @@ const FilterSchema = new mongoose.Schema({
     type: [String], // Array to store custom options added by the user
     default: [],
   },
+  agentId: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "User",
+              required: true,
+          },
 });
 
 module.exports = mongoose.model('Filter', FilterSchema);

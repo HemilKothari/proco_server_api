@@ -46,6 +46,7 @@ const getFilters = async (req, res) => {
 // Get a filter by ID
 const getFilterById = async (req, res) => {
   try {
+    
     const { id } = req.params;
     console.log(`Fetching filter with ID: ${id}`);
 
