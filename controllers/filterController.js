@@ -46,10 +46,10 @@ const getFilters = async (req, res) => {
 // Get a filter by ID
 const getFilterById = async (req, res) => {
   try {
-    const { id } = req.params;
-    console.log(`Fetching filter with ID: ${id}`);
+    const { agentId } = req.params;
+    console.log(`Fetching filter with ID: ${agentId}`);
 
-    const filter = await Filter.findById(id); // Find the filter by ID
+    const filter = await Filter.findOne(agentId); // Find the filter by ID
 
     if (!filter) {
       console.log("Filter not found");
