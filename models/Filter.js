@@ -34,7 +34,7 @@ const FilterSchema = new mongoose.Schema({
     default: '',
   },
   customOptions: {
-    type: array, // Array to store custom options added by the user
+    type: String, // Array to store custom options added by the user
     default: [],
     required: false,
   },
