@@ -34,8 +34,9 @@ const FilterSchema = new mongoose.Schema({
     default: '',
   },
   customOptions: {
-    type: [String], // Array to store custom options added by the user
+    type: array, // Array to store custom options added by the user
     default: [],
+    required: false,
   },
   agentId: {
               type: mongoose.Schema.Types.ObjectId,

@@ -111,7 +111,43 @@ module.exports = {
             res.status(500).json({ error: "Internal server error." });
         }
     }, 
-   
+    addMatchedUser: async (req, res) => {
+        try {
+            const { jobId, userId } = req.body; // Extract jobId and userId from request body
+    
+            const updatedJob = await Job.findByIdAndUpdate(
+                jobId,
+                { $addToSet: { matchedUsers: userId } }, // Ensures uniqueness
+                { new: true }
+            );
+    
+            if (!updatedJob) {
+                return res.status(404).json({ message: "Job not found" });
+            }
+    
+            res.status(200).json({ message: "User matched successfully", matchedUsers: updatedJob.matchedUsers });
+        } catch (error) {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
+    getMatchedUsers: async (req, res) => {
+        try {
+            const { jobId } = req.params;
+    
+            const job = await Job.findById(jobId).populate("matchedUsers", "username skills profile"); // Fetch users with selected fields
+    
+            if (!job) {
+                return res.status(404).json({ message: "Job not found" });
+            }
+    
+            res.status(200).json(job.matchedUsers);
+        } catch (error) {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
+    
+    
+    
    
 }
 

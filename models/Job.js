@@ -22,7 +22,14 @@ const JobSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
-        }
+        },
+        matchedUsers: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                unique: true
+            }
+        ]
     }, { timestamps: true }
 );
 module.exports = mongoose.model("Job", JobSchema)
