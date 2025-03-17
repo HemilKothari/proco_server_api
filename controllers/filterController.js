@@ -1,4 +1,4 @@
-const Filter = require('../models/Filter');
+const Filter = require("../models/Filter");
 
 // Create a new filter
 const createFilter = async (req, res) => {
@@ -10,13 +10,13 @@ const createFilter = async (req, res) => {
 
     console.log("Filter created successfully:", savedFilter);
     res.status(200).json({
-      message: 'Filter created successfully',
+      message: "Filter created successfully",
       data: savedFilter,
     });
   } catch (error) {
     console.error("Error creating filter:", error);
     res.status(500).json({
-      message: 'Error creating filter',
+      message: "Error creating filter",
       error: error.message,
     });
   }
@@ -31,13 +31,13 @@ const getFilters = async (req, res) => {
 
     console.log("Filters fetched successfully:", filters);
     res.status(200).json({
-      message: 'Filters fetched successfully',
+      message: "Filters fetched successfully",
       data: filters,
     });
   } catch (error) {
     console.error("Error fetching filters:", error);
     res.status(500).json({
-      message: 'Error fetching filters',
+      message: "Error fetching filters",
       error: error.message,
     });
   }
@@ -54,19 +54,19 @@ const getFilterById = async (req, res) => {
     if (!filter) {
       console.log("Filter not found");
       return res.status(404).json({
-        message: 'Filter not found',
+        message: "Filter not found",
       });
     }
 
     console.log("Filter fetched successfully:", filter);
     res.status(200).json({
-      message: 'Filter fetched successfully',
+      message: "Filter fetched successfully",
       data: filter,
     });
   } catch (error) {
     console.error("Error fetching filter:", error);
     res.status(500).json({
-      message: 'Error fetching filter',
+      message: "Error fetching filter",
       error: error.message,
     });
   }
@@ -86,19 +86,19 @@ const updateFilter = async (req, res) => {
     if (!updatedFilter) {
       console.log("Filter not found");
       return res.status(404).json({
-        message: 'Filter not found',
+        message: "Filter not found",
       });
     }
 
     console.log("Filter updated successfully:", updatedFilter);
     res.status(200).json({
-      message: 'Filter updated successfully',
+      message: "Filter updated successfully",
       data: updatedFilter,
     });
   } catch (error) {
     console.error("Error updating filter:", error);
     res.status(500).json({
-      message: 'Error updating filter',
+      message: "Error updating filter",
       error: error.message,
     });
   }
@@ -115,19 +115,19 @@ const deleteFilter = async (req, res) => {
     if (!deletedFilter) {
       console.log("Filter not found");
       return res.status(404).json({
-        message: 'Filter not found',
+        message: "Filter not found",
       });
     }
 
     console.log("Filter deleted successfully:", deletedFilter);
     res.status(200).json({
-      message: 'Filter deleted successfully',
+      message: "Filter deleted successfully",
       data: deletedFilter,
     });
   } catch (error) {
     console.error("Error deleting filter:", error);
     res.status(500).json({
-      message: 'Error deleting filter',
+      message: "Error deleting filter",
       error: error.message,
     });
   }
