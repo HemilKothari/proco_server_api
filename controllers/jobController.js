@@ -134,22 +134,28 @@ module.exports = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
-  //   getMatchedUsers: async (req, res) => {
-  //     try {
-  //       const { jobId } = req.params;
 
-  //       const job = await Job.findById(jobId).populate(
-  //         "matchedUsers",
-  //         "username skills profile"
-  //       ); // Fetch users with selected fields
+  getMatchedUsers: async (req, res) => {
+    try {
+      const job = await Job.findById(req.params.id);
 
-  //       if (!job) {
-  //         return res.status(404).json({ message: "Job not found" });
-  //       }
+      if (!job) {
+        return res.status(404).json({ message: "No jobs found" });
+      }
+      await job.populate("swipedUsers", [
+        "username",
+        "location",
+        "skills",
+        "profile",
+      ]);
+      if (!job.swipedUsers) {
+        return res.status(404).json({ message: "No swiped users found" });
+      }
 
-  //       res.status(200).json(job.matchedUsers);
-  //     } catch (error) {
-  //       res.status(500).json({ error: "Internal server error" });
-  //     }
-  //   },
+      res.status(200).json(job.swipedUsers);
+    } catch (error) {
+      console.error("Error fetching swiped users:", error);
+      res.status(500).json({ message: "Internal server error", error });
+    }
+  },
 };

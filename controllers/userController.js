@@ -76,22 +76,22 @@ module.exports = {
     }
   },
 
-  getSwipedUser: async (req, res) => {
-    try {
-      if (req.user.id) {
-        res.status(400).json("User Id is required");
-      }
-      const user = await User.findById(req.user.id);
-      if (!user) {
-        res.status(404).json("Cannot find user");
-      }
-      const { name, profile, location, skills } = user._doc;
-      if (!name || !profile || !location || !skills) {
-        res.status(404).json("Cannot find user");
-      }
-      res.status(200).json({ name, profile, location, skills });
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  },
+  // getSwipedUser: async (req, res) => {
+  //   try {
+  //     if (req.user.id) {
+  //       res.status(400).json("User Id is required");
+  //     }
+  //     const user = await User.findById(req.user.id);
+  //     if (!user) {
+  //       res.status(404).json("Cannot find user");
+  //     }
+  //     const { name, profile, location, skills } = user._doc;
+  //     if (!name || !profile || !location || !skills) {
+  //       res.status(404).json("Cannot find user");
+  //     }
+  //     res.status(200).json({ name, profile, location, skills });
+  //   } catch (error) {
+  //     res.status(500).json(error);
+  //   }
+  // },
 };
