@@ -112,13 +112,37 @@ module.exports = {
       res.status(500).json({ error: "Internal server error." });
     }
   },
+  getSwipedUsers: async (req, res) => {
+    try {
+      const job = await Job.findById(req.params.id);
+
+      if (!job) {
+        return res.status(404).json({ message: "No jobs found" });
+      }
+      await job.populate("swipedUsers", [
+        "username",
+        "location",
+        "skills",
+        "profile",
+      ]);
+      if (!job.swipedUsers) {
+        return res.status(404).json({ message: "No swiped users found" });
+      }
+
+      res.status(200).json(job.swipedUsers);
+    } catch (error) {
+      console.error("Error fetching swiped users:", error);
+      res.status(500).json({ message: "Internal server error", error });
+    }
+  },
+
   addSwipedUser: async (req, res) => {
     try {
       const { jobId, userId } = req.body; // Extract jobId and userId from request body
 
       const updatedJob = await Job.findByIdAndUpdate(
         jobId,
-        { $addToSet: { swipedUsers: userId } },
+        { $addToSet: { SwipeddUsers: userId } },
         { new: true }
       );
 
@@ -128,7 +152,7 @@ module.exports = {
 
       res.status(200).json({
         message: "User swiped successfully",
-        matchedUsers: updatedJob.matchedUsers,
+        swipedUsers: updatedJob.swipedUsers,
       });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
@@ -165,7 +189,7 @@ module.exports = {
 
       const updatedJob = await Job.findByIdAndUpdate(
         jobId,
-        { $addToSet: { macthedUsers: userId } },
+        { $addToSet: { matchedUsers: userId } },
         { new: true }
       );
 
