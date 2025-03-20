@@ -46,20 +46,22 @@ module.exports = {
 
   getUser: async (req, res) => {
     try {
-      if (req.user.id) {
-        res.status(400).json("User Id is required");
+      if (!req.user.id) {
+        // Fix: Ensure req.user.id is checked properly
+        return res.status(400).json("User Id is required");
       }
+
       const user = await User.findById(req.user.id);
-      if (user) {
-        res.status(404).json("Cannot find user");
+      if (!user) {
+        // Fix: Corrected condition to check if user does not exist
+        return res.status(404).json("Cannot find user");
       }
+
       const { password, __v, createdAt, ...userdata } = user._doc;
-      if (!userdata) {
-        res.status(404).json("Cannot find user");
-      }
-      res.status(200).json(userdata);
+
+      return res.status(200).json(userdata); // Fix: Removed unnecessary userdata check
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error); // Fix: Ensured all responses return
     }
   },
 
