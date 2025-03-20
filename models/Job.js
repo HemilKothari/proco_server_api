@@ -30,6 +30,13 @@ const JobSchema = new mongoose.Schema(
         unique: true,
       },
     ],
+    matchedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        unique: true,
+      },
+    ],
   },
   { timestamps: true }
 );

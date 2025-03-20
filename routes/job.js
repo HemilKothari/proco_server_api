@@ -25,9 +25,15 @@ router.get("/search/:key", jobController.searchJobs);
 router.get("/user/:agentId", jobController.getUserJobs);
 
 // GET SWIPED USERS
-router.get("/user/swipe/:id", jobController.getMatchedUsers);
+router.get("/user/swipe/:id", jobController.getSwipedUsers);
 
 //ADD SWIPED USERS
 router.post("/user/swipe", jobController.addSwipedUser);
+
+// GET MATCHED USERS
+router.get("/user/match/:id", jobController.getMatchedUsers);
+
+//ADD MATCHED USERS
+router.post("/user/match", jobController.addSwipedUser);
 
 module.exports = router;
