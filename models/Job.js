@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const JobSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, unique: true },
-    location: { type: String, required: true, unique: true },
-    company: { type: String, required: true },
-    description: { type: String, required: true },
-    salary: { type: String, required: true },
-    period: { type: String, required: true },
-    hiring: { type: Boolean, required: true, default: true },
-    contract: { type: String, required: true },
+    location: { type: String, required: true, unique: false },
+    company: { type: String, required: false },
+    description: { type: String, required: false },
+    salary: { type: String, required: false },
+    period: { type: String, required: false },
+    hiring: { type: Boolean, required: true, default: false },
+    contract: { type: String, required: false },
     requirements: {
       type: Array,
       required: false,
