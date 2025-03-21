@@ -142,7 +142,7 @@ module.exports = {
 
       const updatedJob = await Job.findByIdAndUpdate(
         jobId,
-        { $addToSet: { SwipeddUsers: userId } },
+        { $addToSet: { swipedUsers: userId } },
         { new: true }
       );
 
