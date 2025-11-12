@@ -1,14 +1,13 @@
-const router = require("express").Router();
-const chatController = require("../controllers/chatControllers");
+const express = require("express");
 const {
-  verifyTokenAndAuthorization,
-  verifyToken,
-} = require("../middleware/verifyToken");
+  accessChat,
+  getChats,
+  createGroupChat,
+} = require("../controllers/chatController");
+const router = express.Router();
 
-// CREATE CHAT
-router.post("/", verifyToken, chatController.accessChat);
-
-// Get Chats
-router.get("/", verifyToken, chatController.getChats);
+router.post("/", accessChat);
+router.get("/", getChats);
+router.post("/group", createGroupChat);
 
 module.exports = router;
