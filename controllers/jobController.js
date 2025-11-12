@@ -107,108 +107,6 @@ const getUserJobs = async (req, res) => {
   }
 };
 
-// ======================== GET SWIPED USERS ========================
-const getSwipedUsers = async (req, res) => {
-  try {
-    const job = await Job.findById(req.params.id);
-
-    if (!job) {
-      return res.status(404).json({ message: "No jobs found" });
-    }
-
-    await job.populate("swipedUsers", [
-      "username",
-      "location",
-      "skills",
-      "profile",
-    ]);
-
-    if (!job.swipedUsers) {
-      return res.status(404).json({ message: "No swiped users found" });
-    }
-
-    res.status(200).json(job.swipedUsers);
-  } catch (error) {
-    console.error("Error fetching swiped users:", error);
-    res.status(500).json({ message: "Internal server error", error });
-  }
-};
-
-// ======================== ADD SWIPED USER ========================
-const addSwipedUser = async (req, res) => {
-  try {
-    const { jobId, userId } = req.body;
-
-    const updatedJob = await Job.findByIdAndUpdate(
-      jobId,
-      { $addToSet: { swipedUsers: userId } },
-      { new: true }
-    );
-
-    if (!updatedJob) {
-      return res.status(404).json({ message: "Job not found" });
-    }
-
-    res.status(200).json({
-      message: "User swiped successfully",
-      swipedUsers: updatedJob.swipedUsers,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-// ======================== GET MATCHED USERS ========================
-const getMatchedUsers = async (req, res) => {
-  try {
-    const job = await Job.findById(req.params.id);
-
-    if (!job) {
-      return res.status(404).json({ message: "No jobs found" });
-    }
-
-    await job.populate("matchedUsers", [
-      "username",
-      "location",
-      "skills",
-      "profile",
-    ]);
-
-    if (!job.matchedUsers) {
-      return res.status(404).json({ message: "No matched users found" });
-    }
-
-    res.status(200).json(job.matchedUsers);
-  } catch (error) {
-    console.error("Error fetching matched users:", error);
-    res.status(500).json({ message: "Internal server error", error });
-  }
-};
-
-// ======================== ADD MATCHED USER ========================
-const addMatchedUser = async (req, res) => {
-  try {
-    const { jobId, userId } = req.body;
-
-    const updatedJob = await Job.findByIdAndUpdate(
-      jobId,
-      { $addToSet: { matchedUsers: userId } },
-      { new: true }
-    );
-
-    if (!updatedJob) {
-      return res.status(404).json({ message: "Job not found" });
-    }
-
-    res.status(200).json({
-      message: "User matched successfully",
-      matchedUsers: updatedJob.matchedUsers,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 // ======================== EXPORTS ========================
 module.exports = {
   createJob,
@@ -218,8 +116,4 @@ module.exports = {
   getAllJobs,
   searchJobs,
   getUserJobs,
-  getSwipedUsers,
-  addSwipedUser,
-  getMatchedUsers,
-  addMatchedUser,
 };
