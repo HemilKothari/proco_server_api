@@ -7,10 +7,10 @@ const { verifyTokenAndAgent } = require("../middleware/verifyToken");
 router.post("/", filterController.createFilter);
 
 // UPDATE FILTER
-router.put("/:id",  filterController.updateFilter);
+router.put("/:id", filterController.updateFilter);
 
 // DELETE FILTER
-router.delete("/:id",  filterController.deleteFilter);
+router.delete("/:id", filterController.deleteFilter);
 
 // GET FILTER BY ID
 router.get("/:id", filterController.getFilterById);
@@ -18,8 +18,5 @@ router.get("/:id", filterController.getFilterById);
 // GET ALL FILTERS
 //router.get("/",verifyTokenAndAgent, filterController.getAllFilters);
 router.get("/:id", filterController.getFilters);
-
-
-
 
 module.exports = router;

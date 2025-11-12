@@ -1,12 +1,12 @@
 const Filter = require("../models/Filter");
 
-// Create a new filter
+// ======================== CREATE FILTER ========================
 const createFilter = async (req, res) => {
   try {
     console.log("Creating a new filter with data:", req.body);
 
-    const filter = new Filter(req.body); // Create a new filter from the request body
-    const savedFilter = await filter.save(); // Save the filter to the database
+    const filter = new Filter(req.body);
+    const savedFilter = await filter.save();
 
     console.log("Filter created successfully:", savedFilter);
     res.status(200).json({
@@ -22,12 +22,12 @@ const createFilter = async (req, res) => {
   }
 };
 
-// Get all filters
+// ======================== GET ALL FILTERS ========================
 const getFilters = async (req, res) => {
   try {
     console.log("Fetching all filters");
 
-    const filters = await Filter.find(); // Retrieve all filters from the database
+    const filters = await Filter.find();
 
     console.log("Filters fetched successfully:", filters);
     res.status(200).json({
@@ -43,13 +43,13 @@ const getFilters = async (req, res) => {
   }
 };
 
-// Get a filter by ID
+// ======================== GET FILTER BY ID ========================
 const getFilterById = async (req, res) => {
   try {
     const { agentId } = req.params;
     console.log(`Fetching filter with ID: ${agentId}`);
 
-    const filter = await Filter.findOne(agentId); // Find the filter by ID
+    const filter = await Filter.findOne(agentId);
 
     if (!filter) {
       console.log("Filter not found");
@@ -72,15 +72,15 @@ const getFilterById = async (req, res) => {
   }
 };
 
-// Update a filter
+// ======================== UPDATE FILTER ========================
 const updateFilter = async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`Updating filter with ID: ${id}`, req.body);
 
     const updatedFilter = await Filter.findByIdAndUpdate(id, req.body, {
-      new: true, // Return the updated document
-      runValidators: true, // Validate the updates
+      new: true,
+      runValidators: true,
     });
 
     if (!updatedFilter) {
@@ -104,13 +104,13 @@ const updateFilter = async (req, res) => {
   }
 };
 
-// Delete a filter
+// ======================== DELETE FILTER ========================
 const deleteFilter = async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`Deleting filter with ID: ${id}`);
 
-    const deletedFilter = await Filter.findByIdAndDelete(id); // Delete the filter by ID
+    const deletedFilter = await Filter.findByIdAndDelete(id);
 
     if (!deletedFilter) {
       console.log("Filter not found");
@@ -133,6 +133,7 @@ const deleteFilter = async (req, res) => {
   }
 };
 
+// ======================== EXPORTS ========================
 module.exports = {
   createFilter,
   getFilters,
