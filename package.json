@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "build": "webpack --config ./webpack.config.js",
+    "serve": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -15,8 +18,20 @@
     "dotenv": "^16.0.3",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.0",
+    "jwt-decode": "^4.0.0",
     "mongoose": "^7.0.4",
-    "nodemon": "^2.0.22",
     "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20.11.20",
+    "compression-webpack-plugin": "^11.1.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
   }
 }

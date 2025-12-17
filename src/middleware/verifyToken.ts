@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 
 
-const verifyToken = (req, res, next) => {
+const verifyToken = (req:Request, res:Response, next:NextFunction) => {
     const authHeader = req.headers.token;
     if (authHeader) {
         const token = authHeader.split(" ")[1];
@@ -49,4 +49,4 @@ const verifyTokenAndAgent = (req, res, next) => {
     });
 };
 
-module.exports = { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin, verifyTokenAndAgent };
+export { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin, verifyTokenAndAgent };
