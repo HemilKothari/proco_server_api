@@ -23,4 +23,4 @@ const MatchSchema = new mongoose.Schema(
 // Prevent duplicate matches for same job-user combo
 MatchSchema.index({ jobId: 1, userId: 1 }, { unique: true });
 
-module.exports = mongoose.model("Match", MatchSchema);
+export  mongoose.model("Match", MatchSchema);

@@ -1,11 +1,12 @@
-const router = require("express").Router();
-const authController = require("../controllers/authContoller");
-const { verifyTokenAndAgent } = require("../middleware/verifyToken");
+import { Router } from "express";
+import { createUser, loginUser } from "../controllers/authContoller";
+
+const authRouter = Router()
 
 // REGISTRATION
-router.post("/register", authController.createUser);
+authRouter.post("/register", createUser);
 
 // LOGIN
-router.post("/login", authController.loginUser);
+authRouter.post("/login", loginUser);
 
-module.exports = router;
+export { authRouter};

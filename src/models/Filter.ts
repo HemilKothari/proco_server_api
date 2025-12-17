@@ -44,4 +44,4 @@ const FilterSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Filter", FilterSchema);
+export  mongoose.model("Filter", FilterSchema);

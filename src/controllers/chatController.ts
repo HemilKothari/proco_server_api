@@ -85,7 +85,7 @@ const createGroupChat = async (req, res) => {
   }
 };
 
-module.exports = {
+export  {
   accessChat,
   getChats,
   createGroupChat,

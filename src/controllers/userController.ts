@@ -81,7 +81,7 @@ const getAllUsers = async (req, res) => {
 };
 
 // ======================== EXPORTS ========================
-module.exports = {
+export  {
   updateUser,
   deleteUser,
   getUser,

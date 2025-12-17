@@ -4,10 +4,10 @@ const {
   getChats,
   createGroupChat,
 } = require("../controllers/chatController");
-const router = express.Router();
+const chatRouter = express.Router();
 
-router.post("/", accessChat);
-router.get("/", getChats);
-router.post("/group", createGroupChat);
+chatRouter.post("/", accessChat);
+chatRouter.get("/", getChats);
+chatRouter.post("/group", createGroupChat);
 
-module.exports = router;
+export { chatRouter};

@@ -18,4 +18,4 @@ router.delete("/:id", verifyToken, bookmarkController.deleteBookmark);
 // GET BOOKMARKS
 router.get("/", verifyTokenAndAuthorization, bookmarkController.getBookmarks);
 
-module.exports = router;
+export  router;

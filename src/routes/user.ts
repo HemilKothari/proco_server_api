@@ -20,4 +20,4 @@ router.get("/", verifyTokenAndAuthorization, userController.getUser);
 
 router.get("/all", verifyTokenAndAdmin, userController.getAllUsers);
 
-module.exports = router;
+export  router;

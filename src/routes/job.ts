@@ -24,4 +24,4 @@ router.get("/search/:key", jobController.searchJobs);
 // GET ALL JOBS BY A USER
 router.get("/user/:agentId", jobController.getUserJobs);
 
-module.exports = router;
+export  router;

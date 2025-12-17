@@ -23,4 +23,4 @@ const SwipeSchema = new mongoose.Schema(
 // Prevent duplicate swipes by the same user on the same job
 SwipeSchema.index({ jobId: 1, userId: 1 }, { unique: true });
 
-module.exports = mongoose.model("Swipe", SwipeSchema);
+export  mongoose.model("Swipe", SwipeSchema);

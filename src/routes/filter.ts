@@ -19,4 +19,4 @@ router.get("/:id", filterController.getFilterById);
 //router.get("/",verifyTokenAndAgent, filterController.getAllFilters);
 router.get("/:id", filterController.getFilters);
 
-module.exports = router;
+export  router;

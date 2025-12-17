@@ -134,7 +134,7 @@ const deleteFilter = async (req, res) => {
 };
 
 // ======================== EXPORTS ========================
-module.exports = {
+export  {
   createFilter,
   getFilters,
   getFilterById,

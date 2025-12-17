@@ -47,7 +47,7 @@ const getSwipesByJob = async (req, res) => {
 };
 
 // ======================== EXPORTS ========================
-module.exports = {
+export  {
   addSwipe,
   getSwipesByJob,
 };

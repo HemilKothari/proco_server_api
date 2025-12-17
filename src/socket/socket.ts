@@ -39,4 +39,4 @@ function setupSocket(server) {
   });
 }
 
-module.exports = setupSocket;
+export  setupSocket;

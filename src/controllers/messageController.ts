@@ -104,7 +104,7 @@ const allMessages = async (req, res) => {
 };
 
 // ======================== EXPORTS ========================
-module.exports = {
+export  {
   sendMessage,
   getMessages,
   markAsRead,

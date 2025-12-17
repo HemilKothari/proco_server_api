@@ -10,4 +10,4 @@ router.post("/", sendMessage);
 router.get("/:chatId", getMessages);
 router.get("/all/:id", allMessages);
 
-module.exports = router;
+export  router;

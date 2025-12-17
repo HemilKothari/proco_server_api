@@ -49,7 +49,7 @@ const getMatchesByJob = async (req, res) => {
 };
 
 // ======================== EXPORTS ========================
-module.exports = {
+export  {
   addMatch,
   getMatchesByJob,
 };

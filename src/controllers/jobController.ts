@@ -108,7 +108,7 @@ const getUserJobs = async (req, res) => {
 };
 
 // ======================== EXPORTS ========================
-module.exports = {
+export  {
   createJob,
   updateJob,
   deleteJob,

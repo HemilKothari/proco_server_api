@@ -5,4 +5,4 @@ const router = express.Router();
 router.post("/", addMatch);
 router.get("/:jobId", getMatchesByJob);
 
-module.exports = router;
+export  router;
