@@ -18,7 +18,7 @@ const verifyToken = (req:Request, res:Response, next:NextFunction) => {
     }
 };
 
-const verifyTokenAndAuthorization = (req, res, next) => {
+const verifyTokenAndAuthorization = (req:Request, res:Response, next:NextFunction) => {
     verifyToken(req, res, () => {
         if (req.user.id || req.user.isAdmin) {
             next();
@@ -28,7 +28,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
     });
 };
 
-const verifyTokenAndAdmin = (req, res, next) => {
+const verifyTokenAndAdmin = (req:Request, res:Response, next:NextFunction) => {
     verifyToken(req, res, () => {
         if (req.user.isAdmin) {
             next();
@@ -39,7 +39,7 @@ const verifyTokenAndAdmin = (req, res, next) => {
 };
 
 
-const verifyTokenAndAgent = (req, res, next) => {
+const verifyTokenAndAgent = (req:Request, res:Response, next:NextFunction) => {
     verifyToken(req, res, () => {
         if (req.user.isAgent || req.user.isAdmin) {
             next();
