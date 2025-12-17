@@ -1,8 +1,8 @@
-const express = require("express");
+import { Router } from "express";
 const { addSwipe, getSwipesByJob } = require("../controllers/swipeController");
-const router = express.Router();
+const swipeRouter = Router();
 
-router.post("/", addSwipe);
-router.get("/:jobId", getSwipesByJob);
+swipeRouter.post("/", addSwipe);
+swipeRouter.get("/:jobId", getSwipesByJob);
 
-export  router;
+export  {swipeRouter};

@@ -1,23 +1,23 @@
-const router = require("express").Router();
-const userController = require("../controllers/userController");
-const {
-  verifyTokenAndAuthorization,
-  verifyTokenAndAdmin,
-} = require("../middleware/verifyToken");
+import { Router } from "express";
+import { updateUser, deleteUser, getUser, getAllUsers } from "../controllers/userController";
+import { verifyTokenAndAuthorization, verifyTokenAndAdmin } from "../middleware/verifyToken";
+
+
+const userRouter = Router();
 
 // UPADATE USER
-router.put("/", verifyTokenAndAuthorization, userController.updateUser);
+userRouter.put("/", verifyTokenAndAuthorization, updateUser);
 
 // DELETE USER
 
-router.delete("/", verifyTokenAndAuthorization, userController.deleteUser);
+userRouter.delete("/", verifyTokenAndAuthorization, deleteUser);
 
 // GET USER
 
-router.get("/", verifyTokenAndAuthorization, userController.getUser);
+userRouter.get("/", verifyTokenAndAuthorization, getUser);
 
 // GET ALL USER
 
-router.get("/all", verifyTokenAndAdmin, userController.getAllUsers);
+userRouter.get("/all", verifyTokenAndAdmin, getAllUsers);
 
-export  router;
+export  {userRouter};

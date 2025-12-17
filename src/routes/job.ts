@@ -1,27 +1,28 @@
-const router = require("express").Router();
-const jobController = require("../controllers/jobController");
-const { verifyTokenAndAgent } = require("../middleware/verifyToken");
+import { Router } from "express";
+import { createJob, updateJob, deleteJob, getJob, getAllJobs, searchJobs, getUserJobs } from "../controllers/jobController";
+
+import { verifyTokenAndAgent } from "../middleware/verifyToken";
+const jobRouter = Router();
 
 // CREATE JOB
-router.post("/", verifyTokenAndAgent, jobController.createJob);
+jobRouter.post("/", verifyTokenAndAgent, createJob);
 
 // UPADATE JOB
-router.put("/:id", verifyTokenAndAgent, jobController.updateJob);
+jobRouter.put("/:id", verifyTokenAndAgent, updateJob);
 
 // DELETE JOB
-
-router.delete("/:id", verifyTokenAndAgent, jobController.deleteJob);
+jobRouter.delete("/:id", verifyTokenAndAgent, deleteJob);
 
 // GET JOB BY ID
-router.get("/:id", jobController.getJob);
+jobRouter.get("/:id", getJob);
 
 // GET ALL JOBS
-router.get("/", jobController.getAllJobs);
+jobRouter.get("/", getAllJobs);
 
 // SEARCH FOR JOBS
-router.get("/search/:key", jobController.searchJobs);
+jobRouter.get("/search/:key", searchJobs);
 
 // GET ALL JOBS BY A USER
-router.get("/user/:agentId", jobController.getUserJobs);
+jobRouter.get("/user/:agentId", getUserJobs);
 
-export  router;
+export  {jobRouter};

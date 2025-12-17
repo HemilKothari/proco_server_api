@@ -1,13 +1,10 @@
-const express = require("express");
-const {
-  sendMessage,
-  getMessages,
-  allMessages,
-} = require("../controllers/messageController");
-const router = express.Router();
+import { Router } from "express";
+import { sendMessage, getMessages, allMessages } from "../controllers/messageController";
 
-router.post("/", sendMessage);
-router.get("/:chatId", getMessages);
-router.get("/all/:id", allMessages);
+const messageRouter = Router();
 
-export  router;
+messageRouter.post("/", sendMessage);
+messageRouter.get("/:chatId", getMessages);
+messageRouter.get("/all/:id", allMessages);
+
+export  {messageRouter};

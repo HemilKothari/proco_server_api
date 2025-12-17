@@ -1,22 +1,22 @@
-const router = require("express").Router();
-const filterController = require("../controllers/filterController");
+import { Router } from "express";
+import { createFilter, deleteFilter, getFilterById, getFilters, updateFilter } from "../controllers/filterController";
+// const { verifyTokenAndAgent } = require("../middleware/verifyToken");
 
-const { verifyTokenAndAgent } = require("../middleware/verifyToken");
-
+const filterRouter = Router();
 // CREATE FILTER
-router.post("/", filterController.createFilter);
+filterRouter.post("/", createFilter);
 
 // UPDATE FILTER
-router.put("/:id", filterController.updateFilter);
+filterRouter.put("/:id", updateFilter);
 
 // DELETE FILTER
-router.delete("/:id", filterController.deleteFilter);
+filterRouter.delete("/:id", deleteFilter);
 
 // GET FILTER BY ID
-router.get("/:id", filterController.getFilterById);
+filterRouter.get("/:id", getFilterById);
 
 // GET ALL FILTERS
-//router.get("/",verifyTokenAndAgent, filterController.getAllFilters);
-router.get("/:id", filterController.getFilters);
+//router.get("/",verifyTokenAndAgent, getAllFilters);
+filterRouter.get("/:id", getFilters);
 
-export  router;
+export  {filterRouter};

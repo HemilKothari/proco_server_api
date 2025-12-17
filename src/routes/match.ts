@@ -1,8 +1,8 @@
-const express = require("express");
-const { addMatch, getMatchesByJob } = require("../controllers/matchController");
-const router = express.Router();
+import { Router } from "express";
+import { addMatch, getMatchesByJob } from "../controllers/matchController";
+const matchRouter = Router();
 
-router.post("/", addMatch);
-router.get("/:jobId", getMatchesByJob);
+matchRouter.post("/", addMatch);
+matchRouter.get("/:jobId", getMatchesByJob);
 
-export  router;
+export  {matchRouter};

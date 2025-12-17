@@ -1,21 +1,19 @@
-const router = require("express").Router();
-const {
-  verifyToken,
-  verifyTokenAndAuthorization,
-} = require("../middleware/verifyToken");
-const bookmarkController = require("../controllers/bookmarkController");
+// import { Router } from "express";
+// import { verifyTokenAndAuthorization, verifyToken } from "../middleware/verifyToken";
 
-// CREATE BOOKMARKS
-router.post(
-  "/",
-  verifyTokenAndAuthorization,
-  bookmarkController.createBookmark
-);
+// const filterRouter = Router();
 
-// DELETE BOOKMARKS
-router.delete("/:id", verifyToken, bookmarkController.deleteBookmark);
+// // CREATE BOOKMARKS
+// filterRouter.post(
+//   "/",
+//   verifyTokenAndAuthorization,
+//   createBookmark
+// );
 
-// GET BOOKMARKS
-router.get("/", verifyTokenAndAuthorization, bookmarkController.getBookmarks);
+// // DELETE BOOKMARKS
+// filterRouter.delete("/:id", verifyToken, deleteBookmark);
 
-export  router;
+// // GET BOOKMARKS
+// filterRouter.get("/", verifyTokenAndAuthorization, getBookmarks);
+
+// export  {filterRouter};
