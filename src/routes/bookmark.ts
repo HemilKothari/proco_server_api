@@ -1,19 +1,19 @@
-// import { Router } from "express";
-// import { verifyTokenAndAuthorization, verifyToken } from "../middleware/verifyToken";
+import { Router } from "express";
+import { verifyTokenAndAuthorization, verifyToken } from "../middleware/verifyToken";
+const {
+  createBookmark,
+  deleteBookmark,
+  getBookmarks
+} = require("../controllers/bookmarkController");
+const filterRouter = Router();
 
-// const filterRouter = Router();
+// CREATE BOOKMARKS
+filterRouter.post("/", verifyTokenAndAuthorization, createBookmark);
 
-// // CREATE BOOKMARKS
-// filterRouter.post(
-//   "/",
-//   verifyTokenAndAuthorization,
-//   createBookmark
-// );
+// DELETE BOOKMARKS
+filterRouter.delete("/:id", verifyToken, deleteBookmark);
 
-// // DELETE BOOKMARKS
-// filterRouter.delete("/:id", verifyToken, deleteBookmark);
+// GET BOOKMARKS
+filterRouter.get("/", verifyTokenAndAuthorization, getBookmarks);
 
-// // GET BOOKMARKS
-// filterRouter.get("/", verifyTokenAndAuthorization, getBookmarks);
-
-// export  {filterRouter};
+export  {filterRouter};

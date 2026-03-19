@@ -1,55 +1,71 @@
-const Match = require("../models/Match");
+import { Request, Response } from "express";
+import { Types, Error as MongooseError } from "mongoose";
+import Match from "../models/Match";
+import { MatchUserBody } from "../types";
+import { errorResponse, successResponse } from "../utils/response";
 
 // ======================== ADD MATCH ========================
-const addMatch = async (req, res) => {
+export const addMatch = async (
+  req: Request<{}, {}, MatchUserBody>,
+  res: Response
+): Promise<Response> => {
   try {
     const { jobId, userId } = req.body;
 
     if (!jobId || !userId) {
-      return res.status(400).json({ message: "jobId and userId are required" });
+      return errorResponse(res, "jobId and userId are required", 400);
     }
 
-    const newMatch = new Match({ jobId, userId });
+    const newMatch = new Match({
+      jobId: new Types.ObjectId(jobId),
+      userId: new Types.ObjectId(userId),
+    });
+
     await newMatch.save();
 
-    res
-      .status(200)
-      .json({ message: "User matched successfully", match: newMatch });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "User already matched for this job" });
+    return successResponse(res, newMatch, "User matched successfully", 201);
+  } catch (error: unknown) {
+    if (
+      error instanceof MongooseError &&
+      "code" in error &&
+      error.code === 11000
+    ) {
+      return errorResponse(res, "User already matched for this job", 409);
     }
+
     console.error("Error adding match:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    return errorResponse(res, "Internal server error", 500);  
   }
 };
 
 // ======================== GET MATCHES FOR JOB ========================
-const getMatchesByJob = async (req, res) => {
+export const getMatchesByJob = async (
+  req: Request<{ jobId: string }>,
+  res: Response
+): Promise<Response> => {
   try {
     const { jobId } = req.params;
-    const matches = await Match.find({ jobId }).populate("userId", [
+
+    if (!Types.ObjectId.isValid(jobId)) {
+      return errorResponse(res, "Invalid jobId", 400);
+    }
+
+    const matches = await Match.find({
+      jobId: new Types.ObjectId(jobId),
+    }).populate("userId", [
       "username",
       "location",
       "skills",
       "profile",
     ]);
 
-    if (!matches.length) {
-      return res.status(404).json({ message: "No matched users found" });
+    if (matches.length === 0) {
+      return errorResponse(res, "No matched users found", 404);
     }
 
-    res.status(200).json(matches);
-  } catch (error) {
+    return successResponse(res, matches, "Matches retrieved successfully", 200);
+  } catch (error: unknown) {
     console.error("Error fetching matches:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    return errorResponse(res, "Internal server error", 500);
   }
-};
-
-// ======================== EXPORTS ========================
-export  {
-  addMatch,
-  getMatchesByJob,
 };

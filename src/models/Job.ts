@@ -1,43 +1,51 @@
-const mongoose = require("mongoose");
+import { Schema, model, models } from "mongoose";
+import { JobDocument } from "../types";
 
-const JobSchema = new mongoose.Schema(
+
+/* ======================== JOB SCHEMA ======================== */
+const JobSchema = new Schema<JobDocument>(
   {
     title: { type: String, required: true, unique: true },
-    location: { type: String, required: true, unique: false },
-    company: { type: String, required: false },
-    description: { type: String, required: false },
-    salary: { type: String, required: false },
-    period: { type: String, required: false },
+    location: { type: String, required: true },
+    company: { type: String },
+    description: { type: String },
+    salary: { type: String },
+    period: { type: String },
     hiring: { type: Boolean, required: true, default: false },
-    contract: { type: String, required: false },
+    contract: { type: String },
     requirements: {
-      type: Array,
-      required: false,
+      type: [String],
+      default: [],
     },
     imageUrl: {
       type: String,
-      require: true,
+      required: true,
     },
     agentId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     swipedUsers: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "User",
-        unique: true,
       },
     ],
     matchedUsers: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "User",
-        unique: true,
       },
     ],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-export  mongoose.model("Job", JobSchema);
+
+/* ======================== MODEL EXPORT ======================== */
+const Job =
+  models.Job || model<JobDocument>("Job", JobSchema);
+
+export default Job;

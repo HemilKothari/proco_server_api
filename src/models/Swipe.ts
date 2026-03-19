@@ -1,14 +1,15 @@
-const mongoose = require("mongoose");
+import { Schema, model, models } from "mongoose";
 
-const SwipeSchema = new mongoose.Schema(
+/* ======================== SWIPE SCHEMA ======================== */
+const SwipeSchema = new Schema(
   {
     jobId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Job",
       required: true,
     },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -20,7 +21,9 @@ const SwipeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Prevent duplicate swipes by the same user on the same job
+/* ======================== INDEXES ======================== */
 SwipeSchema.index({ jobId: 1, userId: 1 }, { unique: true });
 
-export  mongoose.model("Swipe", SwipeSchema);
+/* ======================== MODEL ======================== */
+const Swipe = models.Swipe || model("Swipe", SwipeSchema);
+export default Swipe;

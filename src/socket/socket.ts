@@ -1,37 +1,48 @@
-const { Server } = require("socket.io");
+import { Server as HttpServer } from "http";
+import { Server, Socket } from "socket.io";
+import { Types } from "mongoose";
+import { MessagePayload } from "../types";
 
-function setupSocket(server) {
+// ======================== SOCKET SETUP ========================
+function setupSocket(server: HttpServer): void {
   const io = new Server(server, {
     pingTimeout: 60000,
     cors: {
-      origin: "*", // or your Flutter app URL
+      origin: "*",
     },
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", (socket: Socket) => {
     console.log("User connected:", socket.id);
 
     // Join a specific chat room
-    socket.on("join chat", (roomId) => {
+    socket.on("join chat", (roomId: string) => {
+      if (!Types.ObjectId.isValid(roomId)) return;
+
       socket.join(roomId);
       console.log(`User joined chat room: ${roomId}`);
     });
 
     // Handle new messages
-    socket.on("new message", (messageData) => {
+    socket.on("new message", (messageData: MessagePayload) => {
       const chat = messageData.chat;
-      if (!chat?.users) return;
+      if (!chat?.users?.length) return;
 
-      // Send message to all chat participants except sender
       chat.users.forEach((user) => {
         if (user._id === messageData.sender._id) return;
+
         socket.in(user._id).emit("message received", messageData);
       });
     });
 
-    // Optional: typing indicator events
-    socket.on("typing", (roomId) => socket.in(roomId).emit("typing"));
-    socket.on("stop typing", (roomId) => socket.in(roomId).emit("stop typing"));
+    // Typing indicators
+    socket.on("typing", (roomId: string) => {
+      socket.in(roomId).emit("typing");
+    });
+
+    socket.on("stop typing", (roomId: string) => {
+      socket.in(roomId).emit("stop typing");
+    });
 
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
@@ -39,4 +50,4 @@ function setupSocket(server) {
   });
 }
 
-export  setupSocket;
+export default setupSocket;

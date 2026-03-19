@@ -1,85 +1,86 @@
-// const Bookmark = require('../models/Bookmark');
-// const Job = require('../models/Job');
+import { Response } from "express";
+import { Types } from "mongoose";
+import Bookmark from "../models/Bookmark";
+import Job from "../models/Job";
+import { AuthenticatedRequest, CreateBookmarkBody } from "../types";
+import { errorResponse, successResponse } from "../utils/response";
 
-export  {
-  // createBookmark: async (req, res) => {
-  //     const newBook = new Bookmark(req.body);
+// ======================== CREATE BOOKMARK ========================
+const createBookmark = async (
+  req: AuthenticatedRequest<{}, {}, CreateBookmarkBody>,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { job } = req.body;
+    const userId = req.user.id;
 
-  //     try {
-  //         const savedBookmark = await newBook.save();
-  //         const { __v, updatedAt, ...newBookmarkInfo } = savedBookmark._doc;
-  //         res.status(200).json(newBookmarkInfo)
-  //     } catch (error) {
-  //         res.status(500).json(error)
-  //     }
-  // },
+    if (!job) {
+      return errorResponse(res, "job is required", 400);
+    }
 
-  // createBookmark: async (req, res) => {
-  //   const jobID = req.body.job;
+    if (!Types.ObjectId.isValid(job)) {
+      return errorResponse(res, "Invalid job id", 400);
+    }
 
-  //   try {
-  //     const job = await Job.findById(jobID); // Retrieve the job data by ID
+    const existingJob = await Job.findById(job);
+    if (!existingJob) {
+      return errorResponse(res, "Job not found", 404);
+    }
 
-  //     if (!job) {
-  //       return res.status(404).json({ error: 'Job not found' });
-  //     }
+    const bookmark = new Bookmark({
+      job: new Types.ObjectId(job),
+      userId: new Types.ObjectId(userId),
+    });
 
-  //     const newBook = new Bookmark({ job: job, userId: req.user.id }); // Create a new bookmark with the populated job data
+    const savedBookmark = await bookmark.save();
 
-  //     const savedBookmark = await newBook.save();
-
-  //     const { __v, updatedAt, ...newBookmarkInfo } = savedBookmark._doc;
-
-  //     res.status(200).json(newBookmarkInfo);
-  //   } catch (error) {
-  //     res.status(500).json(error);
-  //   }
-  // },
-
-  // // deleteBookmark: async (req, res) => {
-  // //     // const user = req.user.id;
-  // //     // console.log(user)
-  // //     // console.log(req.params.id)
-  // //     try {
-  // //         await Bookmark.findByIdAndDelete(req.params.id)
-  // //         res.status(200).json("BookMark Successfully Deleted")
-  // //     } catch (error) {
-  // //         res.status(500).json(error)
-  // //     }
-  // // },
-
-  // deleteBookmark: async (req, res) => {
-  //   try {
-  //     const userId = req.user.id;
-  //     const jobId = req.params.id;
-  //     var bookmarks = await Bookmark.find({ userId: req.user.id }).populate(
-  //       'job',
-  //       '-requirements'
-  //     );
-  //     console.info(bookmarks.length);
-  //     await Bookmark.findOneAndRemove({ userId: userId, job: jobId });
-
-  //     bookmarks = await Bookmark.find({ userId: req.user.id }).populate(
-  //       'job',
-  //       '-requirements'
-  //     );
-  //     console.info(bookmarks.length);
-
-  //     res.status(200).json('Bookmark successfully deleted');
-  //   } catch (error) {
-  //     res.status(500).json(error);
-  //   }
-  // },
-
-  // getBookmarks: async (req, res) => {
-  //   try {
-  //     const bookmarks = await Bookmark.find({ userId: req.user.id }).populate(
-  //       'job',
-  //       '-requirements'
-  //     );
-  //     res.status(200).json(bookmarks);
-  //   } catch (error) {
-  //     res.status(500).json(error);
-  //   }
-  // },
+    return successResponse(res, savedBookmark, "Bookmark created successfully", 201);
+  } catch (error: unknown) {
+    console.error("Error creating bookmark:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
 };
+
+// ======================== DELETE BOOKMARK ========================
+const deleteBookmark = async (
+  req: AuthenticatedRequest<{ id: string }>,
+  res: Response
+): Promise<Response> => {
+  try {
+    const userId = req.user.id;
+    const jobId = req.params.id;
+
+    if (!Types.ObjectId.isValid(jobId)) {
+      return errorResponse(res, "Invalid job id", 400);
+    }
+
+    await Bookmark.findOneAndDelete({
+      userId: new Types.ObjectId(userId),
+      job: new Types.ObjectId(jobId),
+    });
+
+    return successResponse(res, {}, "Bookmark successfully deleted", 200);
+  } catch (error: unknown) {
+    console.error("Error deleting bookmark:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
+};
+
+// ======================== GET BOOKMARKS ========================
+const getBookmarks = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<Response> => {
+  try {
+    const bookmarks = await Bookmark.find({
+      userId: new Types.ObjectId(req.user.id),
+    }).populate("job", "-requirements");
+
+    return successResponse(res, bookmarks, "Bookmarks fetched successfully", 200);
+  } catch (error: unknown) {
+    console.error("Error fetching bookmarks:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
+};
+
+export { createBookmark, deleteBookmark, getBookmarks };

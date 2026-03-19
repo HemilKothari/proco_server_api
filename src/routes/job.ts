@@ -5,7 +5,7 @@ import { verifyTokenAndAgent } from "../middleware/verifyToken";
 const jobRouter = Router();
 
 // CREATE JOB
-jobRouter.post("/", verifyTokenAndAgent, createJob);
+jobRouter.post("/", createJob);
 
 // UPADATE JOB
 jobRouter.put("/:id", verifyTokenAndAgent, updateJob);

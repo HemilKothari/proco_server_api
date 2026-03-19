@@ -1,9 +1,15 @@
-const User = require("../models/User");
-const CryptoJS = require("crypto-js");
+import User from "../models/User";
+import CryptoJS from "crypto-js";
+import { Request, Response } from "express";
+import { UpdateUserBody } from "../types";
+import { errorResponse, successResponse } from "../utils/response";
 
 // ======================== UPDATE USER ========================
-const updateUser = async (req, res) => {
-  if (req.body.password) {
+const updateUser = async (
+  req: Request<{}, {}, UpdateUserBody>,
+  res: Response) => 
+  {
+  if (req.body.password ) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
       process.env.SECRET
@@ -12,71 +18,74 @@ const updateUser = async (req, res) => {
 
   try {
     if (!req.user.id) {
-      return res.status(400).json("User ID is required");
+      return errorResponse(res, "User ID is required", 400);
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
+      req.user.id as string,
       { $set: req.body },
       { new: true }
     );
 
     if (!updatedUser) {
-      return res.status(404).json("Cannot update user");
+      return errorResponse(res, "Cannot update user", 404);
     }
 
-    const { password, __v, createdAt, ...others } = updatedUser._doc;
-    return res.status(200).json({ ...others });
+    const { password, __v, createdAt, ...others } = (updatedUser as any)._doc;
+    return successResponse(res, { ...others }, "User updated successfully", 200);
   } catch (err) {
-    return res.status(500).json(err);
+    return errorResponse(res, "Internal server error", 500);
   }
 };
 
 // ======================== DELETE USER ========================
-const deleteUser = async (req, res) => {
+const deleteUser = async (req: Request, res: Response) => {
   try {
-    if (!req.user.id) {
-      return res.status(400).json("User ID is required");
+    if (!(req.user.id as string) as boolean) {
+      return errorResponse(res, "User ID is required", 400);
     }
 
-    await User.findByIdAndDelete(req.user.id);
-    return res.status(200).json("Successfully Deleted");
+    await User.findByIdAndDelete(req.user.id as string);
+    return successResponse(res, {}, "User deleted successfully", 200);
   } catch (error) {
-    return res.status(500).json(error);
+    return errorResponse(res, "Internal server error", 500);
   }
 };
 
 // ======================== GET USER ========================
-const getUser = async (req, res) => {
+const getUser = async (req: Request, res: Response) => {
   try {
-    if (!req.user.id) {
-      return res.status(400).json("User ID is required");
+    if (!(req.user.id as string) as boolean) {
+      return errorResponse(res, "User ID is required", 400);
     }
 
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id as string);
     if (!user) {
-      return res.status(404).json("Cannot find user");
+      return errorResponse(res, "Cannot find user", 404);
     }
 
-    const { password, __v, createdAt, ...userdata } = user._doc;
-    return res.status(200).json(userdata);
+    const { password, __v, createdAt, ...userdata } = (user as any)._doc;
+    return successResponse(res, userdata, "User fetched successfully", 200);
   } catch (error) {
-    return res.status(500).json(error);
+    return errorResponse(res, "Internal server error", 500);
   }
 };
 
 // ======================== GET ALL USERS ========================
-const getAllUsers = async (req, res) => {
-  try {
-    const allUser = await User.find();
 
-    if (!allUser) {
-      return res.status(404).json("Cannot find users");
+const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const allUsers = await User.find();
+
+    if (!allUsers || allUsers.length === 0) {
+      return successResponse(res, [], "No users found", 200);
     }
 
-    return res.status(200).json(allUser);
+    return successResponse(res, allUsers, "Users retrieved successfully", 200);
+
   } catch (error) {
-    return res.status(500).json(error);
+    console.error(error);
+    return errorResponse(res, "Internal server error", 500);
   }
 };
 

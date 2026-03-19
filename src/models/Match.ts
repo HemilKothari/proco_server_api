@@ -1,14 +1,15 @@
-const mongoose = require("mongoose");
+import { Schema, model, models } from "mongoose";
 
-const MatchSchema = new mongoose.Schema(
+/* ======================== MATCH SCHEMA ======================== */
+const MatchSchema = new Schema(
   {
     jobId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Job",
       required: true,
     },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -20,7 +21,9 @@ const MatchSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Prevent duplicate matches for same job-user combo
+/* ======================== INDEXES ======================== */
 MatchSchema.index({ jobId: 1, userId: 1 }, { unique: true });
 
-export  mongoose.model("Match", MatchSchema);
+/* ======================== MODEL ======================== */
+const Match = models.Match || model("Match", MatchSchema);
+export default Match;

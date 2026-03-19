@@ -1,140 +1,157 @@
-const Filter = require("../models/Filter");
+import { Request, Response } from "express";
+import { Types } from "mongoose";
+import Filter from "../models/Filter";
 
 // ======================== CREATE FILTER ========================
-const createFilter = async (req, res) => {
+const createFilter = async (req: Request, res: Response): Promise<Response> => {
   try {
-    console.log("Creating a new filter with data:", req.body);
-
     const filter = new Filter(req.body);
     const savedFilter = await filter.save();
 
-    console.log("Filter created successfully:", savedFilter);
-    res.status(200).json({
+    return res.status(201).json({
       message: "Filter created successfully",
       data: savedFilter,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error creating filter:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error creating filter",
-      error: error.message,
     });
   }
 };
 
 // ======================== GET ALL FILTERS ========================
-const getFilters = async (req, res) => {
+const getFilters = async (_req: Request, res: Response): Promise<Response> => {
   try {
-    console.log("Fetching all filters");
-
     const filters = await Filter.find();
 
-    console.log("Filters fetched successfully:", filters);
-    res.status(200).json({
+    return res.status(200).json({
       message: "Filters fetched successfully",
       data: filters,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching filters:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error fetching filters",
-      error: error.message,
     });
   }
 };
 
-// ======================== GET FILTER BY ID ========================
-const getFilterById = async (req, res) => {
+// ======================== GET FILTER BY AGENT ID ========================
+const getFilterById = async (
+  req: Request<{ agentId: string }>,
+  res: Response
+): Promise<Response> => {
   try {
     const { agentId } = req.params;
-    console.log(`Fetching filter with ID: ${agentId}`);
 
-    const filter = await Filter.findOne(agentId);
+    if (!Types.ObjectId.isValid(agentId)) {
+      return res.status(400).json({
+        message: "Invalid agentId",
+      });
+    }
+
+    const filter = await Filter.findOne({
+      agentId: new Types.ObjectId(agentId),
+    });
 
     if (!filter) {
-      console.log("Filter not found");
       return res.status(404).json({
         message: "Filter not found",
       });
     }
 
-    console.log("Filter fetched successfully:", filter);
-    res.status(200).json({
+    return res.status(200).json({
       message: "Filter fetched successfully",
       data: filter,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching filter:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error fetching filter",
-      error: error.message,
     });
   }
 };
 
 // ======================== UPDATE FILTER ========================
-const updateFilter = async (req, res) => {
+const updateFilter = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
-    console.log(`Updating filter with ID: ${id}`, req.body);
 
-    const updatedFilter = await Filter.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid filter id",
+      });
+    }
+
+    const updatedFilter = await Filter.findByIdAndUpdate(
+      new Types.ObjectId(id),
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!updatedFilter) {
-      console.log("Filter not found");
       return res.status(404).json({
         message: "Filter not found",
       });
     }
 
-    console.log("Filter updated successfully:", updatedFilter);
-    res.status(200).json({
+    return res.status(200).json({
       message: "Filter updated successfully",
       data: updatedFilter,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error updating filter:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error updating filter",
-      error: error.message,
     });
   }
 };
 
 // ======================== DELETE FILTER ========================
-const deleteFilter = async (req, res) => {
+const deleteFilter = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
-    console.log(`Deleting filter with ID: ${id}`);
 
-    const deletedFilter = await Filter.findByIdAndDelete(id);
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid filter id",
+      });
+    }
+
+    const deletedFilter = await Filter.findByIdAndDelete(
+      new Types.ObjectId(id)
+    );
 
     if (!deletedFilter) {
-      console.log("Filter not found");
       return res.status(404).json({
         message: "Filter not found",
       });
     }
 
-    console.log("Filter deleted successfully:", deletedFilter);
-    res.status(200).json({
+    return res.status(200).json({
       message: "Filter deleted successfully",
       data: deletedFilter,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error deleting filter:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error deleting filter",
-      error: error.message,
     });
   }
 };
 
 // ======================== EXPORTS ========================
-export  {
+export {
   createFilter,
   getFilters,
   getFilterById,

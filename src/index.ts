@@ -1,20 +1,31 @@
-import express from "express";
+import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
-import {connectDB} from "./config/db";
+import { connectDB } from "./config/db";
 import { router } from "./routes";
 
-
-const app = express();
+// ======================== ENV ========================
 dotenv.config();
+
+// ======================== APP ========================
+const app: Application = express();
+
+// ======================== DATABASE ========================
 connectDB();
 
+// ======================== MIDDLEWARE ========================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ======================== ROUTES ========================
 app.use("/", router);
 
-var port = process.env.PORT || 4000;
+app.get("/", (_req: Request, res: Response) => {
+  res.send("Hello World!");
+});
 
-app.get("/", (req, res) => res.send("Hello World!"));
-app.listen(process.env.PORT || port, () =>
-  console.log(`Example app listening on port ${process.env.PORT}!`)
-);
+// ======================== SERVER ========================
+const PORT: number = Number(process.env.PORT) || 4000;
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});

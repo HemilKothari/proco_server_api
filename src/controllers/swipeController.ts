@@ -1,53 +1,66 @@
-const Swipe = require("../models/Swipe");
+import { Request, Response } from "express";
+import { Types, Error as MongooseError } from "mongoose";
+import Swipe from "../models/Swipe";
+import { SwipeUserBody } from "../types";
+import { errorResponse, successResponse } from "../utils/response";
 
 // ======================== ADD SWIPE ========================
-const addSwipe = async (req, res) => {
+export const addSwipe = async (
+  req: Request<{}, {}, SwipeUserBody>,
+  res: Response
+): Promise<Response> => {
   try {
     const { jobId, userId } = req.body;
 
     if (!jobId || !userId) {
-      return res.status(400).json({ message: "jobId and userId are required" });
+      return errorResponse(res, "jobId and userId are required", 400);
     }
 
-    const newSwipe = new Swipe({ jobId, userId });
+    const newSwipe = new Swipe({
+      jobId: new Types.ObjectId(jobId),
+      userId: new Types.ObjectId(userId),
+    });
+
     await newSwipe.save();
 
-    res
-      .status(200)
-      .json({ message: "User swiped successfully", swipe: newSwipe });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ message: "User already swiped this job" });
+    return successResponse(res, newSwipe, "User swiped successfully", 201);
+  } catch (error: unknown) {
+    if (
+      error instanceof MongooseError &&
+      "code" in error &&
+      error.code === 11000
+    ) {
+      return errorResponse(res, "User already swiped for this job", 409);
     }
+
     console.error("Error adding swipe:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    return errorResponse(res, "Internal server error", 500);
   }
 };
 
 // ======================== GET SWIPES FOR JOB ========================
-const getSwipesByJob = async (req, res) => {
+export const getSwipesByJob = async (
+  req: Request<{ jobId: string }>,
+  res: Response
+): Promise<Response> => {
   try {
     const { jobId } = req.params;
-    const swipes = await Swipe.find({ jobId }).populate("userId", [
-      "username",
-      "location",
-      "skills",
-      "profile",
-    ]);
 
-    if (!swipes.length) {
-      return res.status(404).json({ message: "No swiped users found" });
+    if (!Types.ObjectId.isValid(jobId)) {
+      return errorResponse(res, "Invalid jobId", 400);
     }
 
-    res.status(200).json(swipes);
-  } catch (error) {
-    console.error("Error fetching swipes:", error);
-    res.status(500).json({ message: "Internal server error", error });
-  }
-};
+    const swipes = await Swipe.find({
+      jobId: new Types.ObjectId(jobId),
+    }).populate("userId", ["username", "skills", "profile"]);
 
-// ======================== EXPORTS ========================
-export  {
-  addSwipe,
-  getSwipesByJob,
+    if (swipes.length === 0) {
+      return successResponse(res, [], "No swipes found for this job", 200);
+    }
+
+    return successResponse(res, swipes, "Swipes retrieved successfully", 200);
+  } catch (error: unknown) {
+    console.error("Error fetching swipes:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
 };

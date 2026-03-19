@@ -1,13 +1,25 @@
-const mongoose = require("mongoose");
+import { Schema, model, models } from "mongoose";
 
-const BookSchema = new mongoose.Schema(
-    {
-        job: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Job",
-        },
-        userId: { type: String, required: true, },
+/* ======================== BOOKMARK SCHEMA ======================== */
+const BookmarkSchema = new Schema(
+  {
+    job: {
+      type: Schema.Types.ObjectId,
+      ref: "Job",
+      required: true,
+    },
 
-    }, { timestamps: true }
+    userId: {
+      type: Schema.Types.ObjectId, // FIXED: was String, should be ObjectId
+      ref: "User",
+      required: true,
+    },
+  },
+  { timestamps: true }
 );
-export  mongoose.model("Bookmark", BookSchema)
+
+/* ======================== MODEL ======================== */
+const Bookmark =
+  models.Bookmark || model("Bookmark", BookmarkSchema);
+
+export default Bookmark;

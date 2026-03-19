@@ -1,14 +1,27 @@
-const mongoose = require("mongoose");
+import { Schema, model, models } from "mongoose";
+import { ChatDocument } from "../types";
 
-const ChatSchema = new mongoose.Schema(
+/* ======================== CHAT SCHEMA ======================== */
+const ChatSchema = new Schema<ChatDocument>(
   {
-    chatName: { type: String, trim: true },
+    chatName: { type: String, trim: true, required: true },
     isGroupChat: { type: Boolean, default: false },
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    latestMessage: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
-    groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    users: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
+    latestMessage: {
+      type: Schema.Types.ObjectId,
+      ref: "Message",
+    },
+    groupAdmin: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export  mongoose.model("Chat", ChatSchema);
+const Chat =
+  models.Chat || model<ChatDocument>("Chat", ChatSchema);
+
+export default Chat;

@@ -1,24 +1,25 @@
-const Chat = require("../models/Chat");
-const User = require("../models/User");
+import Chat from "../models/Chat";
+import { Request, Response } from "express";
+import { errorResponse, successResponse } from "../utils/response";
 
 // ======================== ACCESS OR CREATE CHAT ========================
-const accessChat = async (req, res) => {
-  const { user_id } = req.body;
+export const accessChat = async (req: Request, res: Response) => {
+  const { user_id } = req.body as { user_id: string };
   console.log("Req Body", req.body);
 
   if (!user_id)
-    return res.status(400).json({ message: "user_id not provided" });
+    return errorResponse(res, "user_id is required", 400);
 
   try {
     let chat = await Chat.findOne({
       isGroupChat: false,
-      users: { $all: [req.user.id, user_id] },
+      users: { $all: [req.user.id as string, user_id] },
     })
       .populate("users", "-password")
       .populate("latestMessage");
 
     if (chat) {
-      return res.status(200).json(chat);
+      return successResponse(res, chat, "Chat accessed successfully", 200);
     }
 
     const newChat = await Chat.create({
@@ -31,14 +32,14 @@ const accessChat = async (req, res) => {
       "users",
       "-password"
     );
-    res.status(200).json(fullChat);
+    successResponse(res, fullChat, "Chat created successfully", 200);
   } catch (error) {
-    res.status(500).json({ message: "Error accessing chat", error });
+    errorResponse(res, "Error creating chat", 500);
   }
 };
 
 // ======================== FETCH ALL USER CHATS ========================
-const getChats = async (req, res) => {
+export const getChats = async (req: Request, res: Response) => {
   try {
     const chats = await Chat.find({
       users: { $elemMatch: { $eq: req.user.id } },
@@ -48,21 +49,21 @@ const getChats = async (req, res) => {
       .populate("latestMessage")
       .sort({ updatedAt: -1 });
 
-    res.status(200).json(chats);
+    successResponse(res, chats, "Chats fetched successfully", 200);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching chats", error });
+    errorResponse(res, "Error fetching chats", 500);
   }
 };
 
 // ======================== CREATE GROUP CHAT ========================
-const createGroupChat = async (req, res) => {
+export const createGroupChat = async (req: Request, res: Response) => {
   if (!req.body.users || !req.body.name) {
-    return res.status(400).json({ message: "Please provide users and name" });
+    return errorResponse(res, "Please provide users and name", 400);
   }
 
   const users = JSON.parse(req.body.users);
   if (users.length < 2) {
-    return res.status(400).json({ message: "Group chat requires 2+ users" });
+    return errorResponse(res, "Group chat requires 2+ users", 400);
   }
 
   users.push(req.user.id);
@@ -79,14 +80,10 @@ const createGroupChat = async (req, res) => {
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
 
-    res.status(200).json(fullGroupChat);
+    successResponse(res, fullGroupChat, "Group chat created successfully", 200);
   } catch (error) {
-    res.status(500).json({ message: "Error creating group chat", error });
+    errorResponse(res, "Error creating group chat", 500);
   }
 };
 
-export  {
-  accessChat,
-  getChats,
-  createGroupChat,
-};
+
