@@ -1,23 +1,65 @@
 import Job from"../models/Job";
 import { Request, Response } from "express";
-import { JobDocument } from "../types";
 import { errorResponse, successResponse } from "../utils/response";
+import { Types, MongooseError} from "mongoose";
 
 // ======================== CREATE JOB ========================
-const createJob = async (req: Request, res: Response) => {
-  const newJob: JobDocument = new Job(req.body as JobDocument);
-
+const createJob = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-    const savedJob = await newJob.save();
-    if (!savedJob) {
-      return errorResponse(res, "Failed to create job", 500);
+    // Basic validation
+    const { title, location, agentId } = req.body;
+
+    if (!title || !location || !agentId) {
+      return errorResponse(res, "title, location and agentId are required", 400);
     }
-    const { ...newJobInfo } = savedJob.toObject();
-    successResponse(res, newJobInfo, "Job created successfully", 201);
-  } catch (error) {
-    errorResponse(res, "Error creating job", 500);
-  }
-};
+
+    if (!Types.ObjectId.isValid(agentId)) {
+      return errorResponse(res, "Invalid agentId", 400);
+    }
+
+    // Optional manual duplicate check (fallback)
+    const existingJob = await Job.findOne({
+      title,
+      location,
+      agentId: new Types.ObjectId(agentId),
+    });
+
+    if (existingJob) {
+      return errorResponse(
+        res,
+        "Duplicate job: same title, location, and agent already exists",
+        409
+      );
+    }
+
+    const newJob = new Job({
+      ...req.body,
+      agentId: new Types.ObjectId(agentId),
+    });
+
+    const savedJob = await newJob.save();
+
+    const jobObj = savedJob.toObject();
+
+    return successResponse(res, jobObj, "Job created successfully", 201);
+  } catch (error: unknown) {
+    // ======================== DUPLICATE KEY ERROR ========================
+    if (
+      error instanceof MongooseError &&
+      "code" in error &&
+      error.code === 11000
+    ) {
+      return errorResponse(
+        res,
+        "Duplicate job detected (unique constraint)",
+        409
+      );
+    }
+  };
+}
 
 // ======================== UPDATE JOB ========================
 const updateJob = async (req: Request, res: Response) => {
@@ -31,7 +73,7 @@ const updateJob = async (req: Request, res: Response) => {
     const { password, __v, createdAt, ...job } = updatedJob.toObject();
     successResponse(res, job, "Job updated successfully", 200);
   } catch (err) {
-    res.status(500).json(err);
+    errorResponse(res, "Failed to update job", 500);
   }
 };
 
@@ -39,10 +81,10 @@ const updateJob = async (req: Request, res: Response) => {
 const deleteJob = async (req: Request, res: Response) => {
   try {
     await Job.findByIdAndDelete(req.params.id);
-    res.status(200).json("Job Successfully Deleted");
+    successResponse(res, null, "Job Successfully Deleted", 200);
     
   } catch (error) {
-    res.status(500).json(error);
+    errorResponse(res, "Failed to delete job", 500);
   }
 };
 
@@ -51,9 +93,9 @@ const getJob = async (req: Request, res: Response) => {
   try {
     const job = await Job.findById(req.params.id);
     const { __v, createdAt, ...jobData } = job._doc;
-    res.status(200).json(jobData);
+    successResponse(res, jobData, "Job found", 200);
   } catch (error) {
-    res.status(500).json(error);
+    errorResponse(res, "Failed to fetch job", 500);
   }
 };
 
@@ -67,9 +109,9 @@ const getAllJobs = async (req: Request, res: Response) => {
     } else {
       jobs = await Job.find();
     }
-    res.status(200).json(jobs);
+    successResponse(res, jobs, "Jobs found", 200);
   } catch (error) {
-    res.status(500).json(error);
+    errorResponse(res, "Failed to fetch jobs", 500);
   }
 };
 
@@ -89,9 +131,9 @@ const searchJobs = async (req: Request, res: Response) => {
         },
       },
     ]);
-    res.status(200).send(results);
+    successResponse(res, results, "Jobs found", 200);
   } catch (err) {
-    res.status(500).json(err);
+    errorResponse(res, "Failed to search jobs", 500);
   }
 };
 
@@ -107,10 +149,10 @@ const getUserJobs = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "No jobs found for this user." });
     }
 
-    res.status(200).json(jobs);
+    successResponse(res, jobs, "User jobs found", 200);
   } catch (error) {
     console.error("Error fetching user jobs:", error);
-    res.status(500).json({ error: "Internal server error." });
+    errorResponse(res, "Failed to fetch user jobs", 500);
   }
 };
 
