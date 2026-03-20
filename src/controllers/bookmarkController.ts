@@ -15,7 +15,7 @@ const createBookmark = async (
     const userId = req.user.id;
 
     if (!job) {
-      return errorResponse(res, "job is required", 400);
+      return errorResponse(res, "Job is required", 400);
     }
 
     if (!Types.ObjectId.isValid(job)) {
@@ -27,6 +27,16 @@ const createBookmark = async (
       return errorResponse(res, "Job not found", 404);
     }
 
+    // ✅ Check duplicate bookmark
+    const existingBookmark = await Bookmark.findOne({
+      job: new Types.ObjectId(job),
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (existingBookmark) {
+      return errorResponse(res, "Bookmark already exists", 409);
+    }
+
     const bookmark = new Bookmark({
       job: new Types.ObjectId(job),
       userId: new Types.ObjectId(userId),
@@ -34,7 +44,12 @@ const createBookmark = async (
 
     const savedBookmark = await bookmark.save();
 
-    return successResponse(res, savedBookmark, "Bookmark created successfully", 201);
+    return successResponse(
+      res,
+      savedBookmark,
+      "Bookmark created successfully",
+      201
+    );
   } catch (error: unknown) {
     console.error("Error creating bookmark:", error);
     return errorResponse(res, "Internal server error", 500);
@@ -54,12 +69,22 @@ const deleteBookmark = async (
       return errorResponse(res, "Invalid job id", 400);
     }
 
-    await Bookmark.findOneAndDelete({
+    const deletedBookmark = await Bookmark.findOneAndDelete({
       userId: new Types.ObjectId(userId),
       job: new Types.ObjectId(jobId),
     });
 
-    return successResponse(res, {}, "Bookmark successfully deleted", 200);
+    // ✅ Check if bookmark existed
+    if (!deletedBookmark) {
+      return errorResponse(res, "Bookmark not found", 404);
+    }
+
+    return successResponse(
+      res,
+      {},
+      "Bookmark successfully deleted",
+      200
+    );
   } catch (error: unknown) {
     console.error("Error deleting bookmark:", error);
     return errorResponse(res, "Internal server error", 500);
@@ -76,7 +101,17 @@ const getBookmarks = async (
       userId: new Types.ObjectId(req.user.id),
     }).populate("job", "-requirements");
 
-    return successResponse(res, bookmarks, "Bookmarks fetched successfully", 200);
+    // ✅ Empty check (consistent with other controllers)
+    if (!bookmarks || bookmarks.length === 0) {
+      return successResponse(res, [], "No bookmarks found", 200);
+    }
+
+    return successResponse(
+      res,
+      bookmarks,
+      "Bookmarks fetched successfully",
+      200
+    );
   } catch (error: unknown) {
     console.error("Error fetching bookmarks:", error);
     return errorResponse(res, "Internal server error", 500);

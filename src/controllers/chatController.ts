@@ -49,9 +49,25 @@ export const getChats = async (req: Request, res: Response) => {
       .populate("latestMessage")
       .sort({ updatedAt: -1 });
 
-    successResponse(res, chats, "Chats fetched successfully", 200);
+    // ✅ Check if no chats exist
+    if (!chats || chats.length === 0) {
+      return successResponse(
+        res,
+        [],
+        "No chats found",
+        200
+      );
+    }
+
+    return successResponse(
+      res,
+      chats,
+      "Chats fetched successfully",
+      200
+    );
   } catch (error) {
-    errorResponse(res, "Error fetching chats", 500);
+    console.error("Error fetching chats:", error);
+    return errorResponse(res, "Error fetching chats", 500);
   }
 };
 

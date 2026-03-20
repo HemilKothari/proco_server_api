@@ -3,6 +3,8 @@ import { Types, Error as MongooseError } from "mongoose";
 import Swipe from "../models/Swipe";
 import { SwipeUserBody } from "../types";
 import { errorResponse, successResponse } from "../utils/response";
+import Job from "../models/Job";
+import User from "../models/User";
 
 // ======================== ADD SWIPE ========================
 export const addSwipe = async (
@@ -49,16 +51,28 @@ export const getSwipesByJob = async (
     if (!Types.ObjectId.isValid(jobId)) {
       return errorResponse(res, "Invalid jobId", 400);
     }
+    const job = await Job.findById(jobId);
 
-    const swipes = await Swipe.find({
-      jobId: new Types.ObjectId(jobId),
-    }).populate("userId", ["username", "skills", "profile"]);
+    if (!job) {
+      return errorResponse(res, "Job not found", 404);
+    }
 
-    if (swipes.length === 0) {
+    const swipedUserIds = job.swipedUsers || [];
+
+    if (swipedUserIds.length === 0) {
       return successResponse(res, [], "No swipes found for this job", 200);
     }
 
-    return successResponse(res, swipes, "Swipes retrieved successfully", 200);
+    const users = await User.find({
+      _id: { $in: swipedUserIds },
+    }).select("username skills profile location");
+
+    return successResponse(
+      res,
+      users,
+      "Swipes retrieved successfully",
+      200
+    );
   } catch (error: unknown) {
     console.error("Error fetching swipes:", error);
     return errorResponse(res, "Internal server error", 500);

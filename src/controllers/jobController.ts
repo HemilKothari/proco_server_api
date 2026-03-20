@@ -139,7 +139,6 @@ const searchJobs = async (req: Request, res: Response) => {
 
 // ======================== GET USER JOBS ========================
 const getUserJobs = async (req: Request, res: Response) => {
-  console.log("getUserJobs function called with agentId:", req.params.id);
   try {
     const agentId = req.params.agentId;
     const jobs = await Job.find({ agentId: agentId });
