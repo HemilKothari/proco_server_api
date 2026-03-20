@@ -13,13 +13,11 @@ function setupSocket(server: HttpServer): void {
   });
 
   io.on("connection", (socket: Socket) => {
-  console.log("User connected:", socket.id);
 
   // 🔥 USER SETUP
   socket.on("setup", (userId: string) => {
     socket.join(userId);
     socket.emit("connected");
-    console.log("User setup:", userId);
   });
 
   // JOIN CHAT ROOM
@@ -27,7 +25,6 @@ function setupSocket(server: HttpServer): void {
     if (!Types.ObjectId.isValid(roomId)) return;
 
     socket.join(roomId);
-    console.log(`User joined chat room: ${roomId}`);
   });
 
   // NEW MESSAGE
@@ -52,7 +49,6 @@ function setupSocket(server: HttpServer): void {
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
   });
 });
 }

@@ -5,7 +5,6 @@ import { errorResponse, successResponse } from "../utils/response";
 // ======================== ACCESS OR CREATE CHAT ========================
 export const accessChat = async (req: Request, res: Response) => {
   const { userId } = req.body as { userId: string };
-  console.log("Req Body", req.body);
 
   if (!userId)
     return errorResponse(res, "userId is required", 400);

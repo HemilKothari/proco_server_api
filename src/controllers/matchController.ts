@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { Types, Error as MongooseError } from "mongoose";
+import { Types } from "mongoose";
+import { MongoServerError } from 'mongodb';
 import Match from "../models/Match";
 import { MatchUserBody } from "../types";
 import { errorResponse, successResponse } from "../utils/response";
@@ -25,16 +26,13 @@ export const addMatch = async (
 
     return successResponse(res, newMatch, "User matched successfully", 201);
   } catch (error: unknown) {
-    if (
-      error instanceof MongooseError &&
-      "code" in error &&
-      error.code === 11000
-    ) {
+    // ✅ MongoServerError is what the driver actually throws for duplicate keys
+    if (error instanceof MongoServerError && error.code === 11000) {
       return errorResponse(res, "User already matched for this job", 409);
     }
 
     console.error("Error adding match:", error);
-    return errorResponse(res, "Internal server error", 500);  
+    return errorResponse(res, "Internal server error", 500);
   }
 };
 
