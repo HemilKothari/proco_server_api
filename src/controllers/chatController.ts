@@ -4,16 +4,16 @@ import { errorResponse, successResponse } from "../utils/response";
 
 // ======================== ACCESS OR CREATE CHAT ========================
 export const accessChat = async (req: Request, res: Response) => {
-  const { user_id } = req.body as { user_id: string };
+  const { userId } = req.body as { userId: string };
   console.log("Req Body", req.body);
 
-  if (!user_id)
-    return errorResponse(res, "user_id is required", 400);
+  if (!userId)
+    return errorResponse(res, "userId is required", 400);
 
   try {
     let chat = await Chat.findOne({
       isGroupChat: false,
-      users: { $all: [req.user.id as string, user_id] },
+      users: { $all: [req.user.id as string, userId] },
     })
       .populate("users", "-password")
       .populate("latestMessage");
@@ -25,7 +25,7 @@ export const accessChat = async (req: Request, res: Response) => {
     const newChat = await Chat.create({
       chatName: "sender",
       isGroupChat: false,
-      users: [req.user.id, user_id],
+      users: [req.user.id, userId],
     });
 
     const fullChat = await Chat.findById(newChat._id).populate(

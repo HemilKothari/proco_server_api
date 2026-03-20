@@ -5,15 +5,15 @@ const {
   deleteBookmark,
   getBookmarks
 } = require("../controllers/bookmarkController");
-const filterRouter = Router();
+const bookmarkRoute = Router();
 
 // CREATE BOOKMARKS
-filterRouter.post("/", verifyTokenAndAuthorization, createBookmark);
+bookmarkRoute.post("/", verifyTokenAndAuthorization, createBookmark);
 
 // DELETE BOOKMARKS
-filterRouter.delete("/:id", verifyToken, deleteBookmark);
+bookmarkRoute.delete("/:id", verifyToken, deleteBookmark);
 
 // GET BOOKMARKS
-filterRouter.get("/", verifyTokenAndAuthorization, getBookmarks);
+bookmarkRoute.get("/", verifyTokenAndAuthorization, getBookmarks);
 
-export  {filterRouter};
+export  {bookmarkRoute};

@@ -13,41 +13,48 @@ function setupSocket(server: HttpServer): void {
   });
 
   io.on("connection", (socket: Socket) => {
-    console.log("User connected:", socket.id);
+  console.log("User connected:", socket.id);
 
-    // Join a specific chat room
-    socket.on("join chat", (roomId: string) => {
-      if (!Types.ObjectId.isValid(roomId)) return;
+  // 🔥 USER SETUP
+  socket.on("setup", (userId: string) => {
+    socket.join(userId);
+    socket.emit("connected");
+    console.log("User setup:", userId);
+  });
 
-      socket.join(roomId);
-      console.log(`User joined chat room: ${roomId}`);
-    });
+  // JOIN CHAT ROOM
+  socket.on("join chat", (roomId: string) => {
+    if (!Types.ObjectId.isValid(roomId)) return;
 
-    // Handle new messages
-    socket.on("new message", (messageData: MessagePayload) => {
-      const chat = messageData.chat;
-      if (!chat?.users?.length) return;
+    socket.join(roomId);
+    console.log(`User joined chat room: ${roomId}`);
+  });
 
-      chat.users.forEach((user) => {
-        if (user._id === messageData.sender._id) return;
+  // NEW MESSAGE
+  socket.on("new message", (messageData: MessagePayload) => {
+    const chat = messageData.chat;
+    if (!chat?.users?.length) return;
 
-        socket.in(user._id).emit("message received", messageData);
-      });
-    });
+    chat.users.forEach((user) => {
+      if (user._id === messageData.sender._id) return;
 
-    // Typing indicators
-    socket.on("typing", (roomId: string) => {
-      socket.in(roomId).emit("typing");
-    });
-
-    socket.on("stop typing", (roomId: string) => {
-      socket.in(roomId).emit("stop typing");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+      socket.to(user._id).emit("message received", messageData);
     });
   });
+
+  // TYPING
+  socket.on("typing", (roomId: string) => {
+    socket.to(roomId).emit("typing");
+  });
+
+  socket.on("stop typing", (roomId: string) => {
+    socket.to(roomId).emit("stop typing");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
 }
 
 export default setupSocket;

@@ -7,6 +7,7 @@ import { matchRouter } from "./match";
 import { swipeRouter } from "./swipe";
 import { messageRouter } from "./messages";
 import { userRouter } from "./user";
+import { bookmarkRoute } from "./bookmark";
 
 
 export const router = Router();
@@ -14,7 +15,7 @@ export const router = Router();
 router.use("/api/", authRouter);
 router.use("/api/users", userRouter);
 router.use("/api/jobs", jobRouter);
-// router.use("/api/bookmarks", bookmarkRoute);
+router.use("/api/bookmarks", bookmarkRoute);
 router.use("/api/chats", chatRouter);
 router.use("/api/messages", messageRouter);
 router.use("/api/filters", filterRouter);
