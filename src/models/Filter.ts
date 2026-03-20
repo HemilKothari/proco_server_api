@@ -1,0 +1,60 @@
+import { Schema, model, models } from "mongoose";
+
+/* ======================== FILTER SCHEMA ======================== */
+const FilterSchema = new Schema(
+  {
+    selectedOptions: {
+      type: [String],
+      default: [],
+    },
+
+    opportunityTypes: {
+      type: Map,
+      of: Boolean,
+      default: {
+        Internship: false,
+        Research: false,
+        Freelance: false,
+        Competition: false,
+      },
+    },
+
+    selectedLocationOption: {
+      type: String,
+      enum: ["City", "State", "Country", ""],
+      default: "",
+    },
+
+    locationDistance: {
+      type: Number,
+      default: 10.0,
+    },
+
+    selectedState: {
+      type: String,
+      default: "",
+    },
+
+    enteredCountry: {
+      type: String,
+      default: "",
+    },
+
+    customOptions: {
+      type: [String], // FIXED: was String but default was []
+      default: [],
+    },
+
+    agentId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+
+/* ======================== MODEL ======================== */
+const Filter = models.Filter || model("Filter", FilterSchema);
+export default Filter;
