@@ -28,13 +28,13 @@ app.get("/", (_req: Request, res: Response) => {
 // ======================== SERVER ========================
 const PORT: number = Number(process.env.PORT) || 3000;
 
-// 🔥 CREATE HTTP SERVER
+//CREATE HTTP SERVER
 const server = http.createServer(app);
 
-// 🔥 ATTACH SOCKET
+//ATTACH SOCKET
 setupSocket(server);
 
-// 🔥 START SERVER
-server.listen(PORT, () => {
+//START SERVER
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server + Socket running on port ${PORT}`);
 });
