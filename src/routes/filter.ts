@@ -12,11 +12,10 @@ filterRouter.put("/:id", updateFilter);
 // DELETE FILTER
 filterRouter.delete("/:id", deleteFilter);
 
-// GET FILTER BY ID
-filterRouter.get("/:id", getFilterById);
-
 // GET ALL FILTERS
-//router.get("/",verifyTokenAndAgent, getAllFilters);
-filterRouter.get("/:id", getFilters);
+filterRouter.get("/", getFilters);
+
+// GET FILTER BY AGENT ID
+filterRouter.get("/:id", getFilterById);
 
 export  {filterRouter};

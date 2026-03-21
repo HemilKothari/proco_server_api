@@ -1,4 +1,6 @@
 import Job from"../models/Job";
+import Filter from "../models/Filter";
+import User from "../models/User";
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/response";
 import { Types, MongooseError} from "mongoose";
@@ -46,19 +48,15 @@ const createJob = async (
 
     return successResponse(res, jobObj, "Job created successfully", 201);
   } catch (error: unknown) {
-    // ======================== DUPLICATE KEY ERROR ========================
     if (
       error instanceof MongooseError &&
       "code" in error &&
       error.code === 11000
     ) {
-      return errorResponse(
-        res,
-        "Duplicate job detected (unique constraint)",
-        409
-      );
+      return errorResponse(res, "Duplicate job detected (unique constraint)", 409);
     }
-  };
+    return errorResponse(res, "Failed to create job", 500);
+  }
 }
 
 // ======================== UPDATE JOB ========================
@@ -144,14 +142,71 @@ const getUserJobs = async (req: Request, res: Response) => {
     const jobs = await Job.find({ agentId: agentId });
 
     if (!jobs.length) {
-      console.log(`No jobs found for agentId: ${agentId}`);
-      return res.status(404).json({ message: "No jobs found for this user." });
+      return successResponse(res, [], "No jobs found for this user.", 200);
     }
 
     successResponse(res, jobs, "User jobs found", 200);
   } catch (error) {
     console.error("Error fetching user jobs:", error);
     errorResponse(res, "Failed to fetch user jobs", 500);
+  }
+};
+
+// ======================== GET FILTERED JOBS BY AGENT ========================
+const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response) => {
+  try {
+    const { agentId } = req.params;
+
+    if (!Types.ObjectId.isValid(agentId)) {
+      return errorResponse(res, "Invalid agentId", 400);
+    }
+
+    const filter = await Filter.findOne({ agentId: new Types.ObjectId(agentId) });
+
+    // No filter saved yet — return all jobs
+    if (!filter) {
+      const jobs = await Job.find();
+      return successResponse(res, jobs, "Jobs found", 200);
+    }
+
+    const query: Record<string, unknown> = {};
+
+    // Category filter (selectedOptions + customOptions)
+    const allSelectedOptions = [
+      ...(filter.selectedOptions || []),
+      ...(filter.customOptions || []),
+    ];
+    if (allSelectedOptions.length > 0) {
+      query.category = { $in: allSelectedOptions };
+    }
+
+    // Opportunity type filter
+    const activeTypes: string[] = [];
+    if (filter.opportunityTypes) {
+      for (const [type, enabled] of (filter.opportunityTypes as Map<string, boolean>).entries()) {
+        if (enabled) activeTypes.push(type);
+      }
+    }
+    if (activeTypes.length > 0) {
+      query.opportunityType = { $in: activeTypes };
+    }
+
+    // Location filter — all match against job.location (freeform text entered when posting)
+    if (filter.selectedLocationOption === "City") {
+      const user = await User.findById(new Types.ObjectId(agentId)).select("city");
+      if (user?.city) {
+        query.location = { $regex: user.city, $options: "i" };
+      }
+    } else if (filter.selectedLocationOption === "State" && filter.selectedState) {
+      query.location = { $regex: filter.selectedState, $options: "i" };
+    } else if (filter.selectedLocationOption === "Country" && filter.enteredCountry) {
+      query.location = { $regex: filter.enteredCountry, $options: "i" };
+    }
+
+    const jobs = await Job.find(query);
+    return successResponse(res, jobs, "Jobs found", 200);
+  } catch (error) {
+    return errorResponse(res, "Failed to fetch filtered jobs", 500);
   }
 };
 
@@ -164,4 +219,5 @@ export  {
   getAllJobs,
   searchJobs,
   getUserJobs,
+  getFilteredJobs,
 };

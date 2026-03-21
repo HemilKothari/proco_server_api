@@ -45,7 +45,9 @@ export interface Job {
   agentId: Types.ObjectId;
   swipedUsers: Types.ObjectId[];
   matchedUsers: Types.ObjectId[];
-  
+  category?: string;
+  opportunityType?: string;
+  city?: string;
 }
 export type JobDocument = HydratedDocument<Job>;
 

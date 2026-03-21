@@ -5,7 +5,7 @@ import { JobDocument } from "../types";
 /* ======================== JOB SCHEMA ======================== */
 const JobSchema = new Schema<JobDocument>(
   {
-    title: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
     location: { type: String, required: true },
     company: { type: String },
     description: { type: String },
@@ -19,7 +19,7 @@ const JobSchema = new Schema<JobDocument>(
     },
     imageUrl: {
       type: String,
-      required: true,
+      default: "",
     },
     agentId: {
       type: Schema.Types.ObjectId,
@@ -38,6 +38,13 @@ const JobSchema = new Schema<JobDocument>(
         ref: "User",
       },
     ],
+    category: { type: String, default: "" },
+    opportunityType: {
+      type: String,
+      enum: ["Internship", "Research", "Freelance", "Competition", ""],
+      default: "",
+    },
+    city: { type: String, default: "" },
   },
   {
     timestamps: true,
