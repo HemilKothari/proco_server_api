@@ -16,6 +16,6 @@ filterRouter.delete("/:id", deleteFilter);
 filterRouter.get("/", getFilters);
 
 // GET FILTER BY AGENT ID
-filterRouter.get("/:id", getFilterById);
+filterRouter.get("/:agentId", getFilterById);
 
 export  {filterRouter};

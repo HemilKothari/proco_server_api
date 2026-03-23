@@ -205,7 +205,7 @@ const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response)
     const allSelectedOptions = [
       ...(filter.selectedOptions || []),
       ...(filter.customOptions || []),
-    ];
+    ].filter((opt) => opt.trim() !== "");
     if (allSelectedOptions.length > 0) {
       query.domain = { $in: allSelectedOptions };
     }
