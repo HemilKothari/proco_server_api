@@ -33,7 +33,9 @@ export type ChatDocument = HydratedDocument<Chat>;
 /* ===== Job ===== */
 export interface Job {
   title: string;
-  location: string;
+  pincode?: string;
+  state?: string;
+  country?: string;
   company?: string;
   description?: string;
   salary?: string;
@@ -45,7 +47,7 @@ export interface Job {
   agentId: Types.ObjectId;
   swipedUsers: Types.ObjectId[];
   matchedUsers: Types.ObjectId[];
-  category?: string;
+  domain?: string;
   opportunityType?: string;
   city?: string;
 }
@@ -62,9 +64,9 @@ export interface Filter {
   selectedOptions: string[];
   opportunityTypes: Map<OpportunityType, boolean>;
   selectedLocationOption: "City" | "State" | "Country" | "";
-  locationDistance: number;
+  selectedCity: string;
   selectedState: string;
-  enteredCountry: string;
+  selectedCountry: string;
   customOptions: string[];
   agentId: Types.ObjectId;
 }

@@ -65,7 +65,7 @@ export const getSwipesByJob = async (
 
     const users = await User.find({
       _id: { $in: swipedUserIds },
-    }).select("username skills profile location");
+    }).select("username skills profile city state country");
 
     return successResponse(
       res,

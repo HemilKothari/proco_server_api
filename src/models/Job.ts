@@ -6,7 +6,9 @@ import { JobDocument } from "../types";
 const JobSchema = new Schema<JobDocument>(
   {
     title: { type: String, required: true },
-    location: { type: String, required: true },
+    pincode: { type: String, default: "" },
+    state: { type: String, default: "" },
+    country: { type: String, default: "" },
     company: { type: String },
     description: { type: String },
     salary: { type: String },
@@ -38,7 +40,25 @@ const JobSchema = new Schema<JobDocument>(
         ref: "User",
       },
     ],
-    category: { type: String, default: "" },
+    domain: {
+      type: String,
+      enum: [
+        "Web Development",
+        "App Development",
+        "Graphic Designer",
+        "Finance",
+        "Consulting",
+        "Marketing",
+        "Competitive Programming",
+        "Cyber Security",
+        "Blockchain",
+        "Research",
+        "UI/UX",
+        "Animator",
+        "",
+      ],
+      default: "",
+    },
     opportunityType: {
       type: String,
       enum: ["Internship", "Research", "Freelance", "Competition", ""],

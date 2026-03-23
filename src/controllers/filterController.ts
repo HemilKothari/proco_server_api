@@ -5,12 +5,17 @@ import Filter from "../models/Filter";
 // ======================== CREATE FILTER ========================
 const createFilter = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const filter = new Filter(req.body);
-    const savedFilter = await filter.save();
+    const { agentId, ...rest } = req.body;
+
+    const filter = await Filter.findOneAndUpdate(
+      { agentId },
+      { agentId, ...rest },
+      { upsert: true, new: true, runValidators: true }
+    );
 
     return res.status(201).json({
       message: "Filter created successfully",
-      data: savedFilter,
+      data: filter,
     });
   } catch (error: unknown) {
     console.error("Error creating filter:", error);

@@ -25,9 +25,9 @@ const FilterSchema = new Schema(
       default: "",
     },
 
-    locationDistance: {
-      type: Number,
-      default: 10.0,
+    selectedCity: {
+      type: String,
+      default: "",
     },
 
     selectedState: {
@@ -35,7 +35,7 @@ const FilterSchema = new Schema(
       default: "",
     },
 
-    enteredCountry: {
+    selectedCountry: {
       type: String,
       default: "",
     },

@@ -52,7 +52,9 @@ export const getMatchesByJob = async (
       jobId: new Types.ObjectId(jobId),
     }).populate("userId", [
       "username",
-      "location",
+      "city",
+      "state",
+      "country",
       "skills",
       "profile",
     ]);

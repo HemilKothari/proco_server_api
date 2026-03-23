@@ -1,6 +1,5 @@
 import Job from"../models/Job";
 import Filter from "../models/Filter";
-import User from "../models/User";
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/response";
 import { Types, MongooseError} from "mongoose";
@@ -12,10 +11,27 @@ const createJob = async (
 ): Promise<Response> => {
   try {
     // Basic validation
-    const { title, location, agentId } = req.body;
+    const {
+      title,
+      agentId,
+      company,
+      description,
+      salary,
+      period,
+      hiring,
+      contract,
+      requirements,
+      imageUrl,
+      domain,
+      opportunityType,
+      pincode,
+      city,
+      state,
+      country,
+    } = req.body;
 
-    if (!title || !location || !agentId) {
-      return errorResponse(res, "title, location and agentId are required", 400);
+    if (!title || !agentId) {
+      return errorResponse(res, "title and agentId are required", 400);
     }
 
     if (!Types.ObjectId.isValid(agentId)) {
@@ -25,21 +41,34 @@ const createJob = async (
     // Optional manual duplicate check (fallback)
     const existingJob = await Job.findOne({
       title,
-      location,
       agentId: new Types.ObjectId(agentId),
     });
 
     if (existingJob) {
       return errorResponse(
         res,
-        "Duplicate job: same title, location, and agent already exists",
+        "Duplicate job: same title and agent already exists",
         409
       );
     }
 
     const newJob = new Job({
-      ...req.body,
+      title,
       agentId: new Types.ObjectId(agentId),
+      company: company || "",
+      description: description || "",
+      salary: salary || "",
+      period: period || "",
+      hiring: hiring ?? false,
+      contract: contract || "",
+      requirements: requirements || [],
+      imageUrl: imageUrl || "",
+      domain: domain || "",
+      opportunityType: opportunityType || "",
+      pincode: pincode || "",
+      city: city || "",
+      state: state || "",
+      country: country || "",
     });
 
     const savedJob = await newJob.save();
@@ -55,7 +84,8 @@ const createJob = async (
     ) {
       return errorResponse(res, "Duplicate job detected (unique constraint)", 409);
     }
-    return errorResponse(res, "Failed to create job", 500);
+    const errMsg = error instanceof Error ? error.message : "Failed to create job";
+    return errorResponse(res, errMsg, 500);
   }
 }
 
@@ -177,7 +207,7 @@ const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response)
       ...(filter.customOptions || []),
     ];
     if (allSelectedOptions.length > 0) {
-      query.category = { $in: allSelectedOptions };
+      query.domain = { $in: allSelectedOptions };
     }
 
     // Opportunity type filter
@@ -191,16 +221,13 @@ const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response)
       query.opportunityType = { $in: activeTypes };
     }
 
-    // Location filter — all match against job.location (freeform text entered when posting)
-    if (filter.selectedLocationOption === "City") {
-      const user = await User.findById(new Types.ObjectId(agentId)).select("city");
-      if (user?.city) {
-        query.location = { $regex: user.city, $options: "i" };
-      }
+    // Location filter — matches against job.city, job.state, job.country
+    if (filter.selectedLocationOption === "City" && filter.selectedCity) {
+      query.city = { $regex: filter.selectedCity, $options: "i" };
     } else if (filter.selectedLocationOption === "State" && filter.selectedState) {
-      query.location = { $regex: filter.selectedState, $options: "i" };
-    } else if (filter.selectedLocationOption === "Country" && filter.enteredCountry) {
-      query.location = { $regex: filter.enteredCountry, $options: "i" };
+      query.state = { $regex: filter.selectedState, $options: "i" };
+    } else if (filter.selectedLocationOption === "Country" && filter.selectedCountry) {
+      query.country = { $regex: filter.selectedCountry, $options: "i" };
     }
 
     const jobs = await Job.find(query);
