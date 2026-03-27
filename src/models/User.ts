@@ -62,6 +62,11 @@ const UserSchema = new Schema (
     city: { type: String },
     state: { type: String },
     country: { type: String },
+    age: { type: String, default: '' },
+    linkedInUrl: { type: String, default: '' },
+    gitHubUrl: { type: String, default: '' },
+    twitterUrl: { type: String, default: '' },
+    portfolioUrl: { type: String, default: '' },
 
     isFirstTimeUser: {
       type: Boolean,

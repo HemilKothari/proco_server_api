@@ -117,6 +117,11 @@ export interface User {
   city?: string;
   state?: string;
   country?: string;
+  age?: string;
+  linkedInUrl?: string;
+  gitHubUrl?: string;
+  twitterUrl?: string;
+  portfolioUrl?: string;
   isFirstTimeUser: boolean;
 }
 export type UserDocument = HydratedDocument<User>;
@@ -158,6 +163,11 @@ export interface UpdateUserBody {
   city?: string;
   state?: string;
   country?: string;
+  age?: string;
+  linkedInUrl?: string;
+  gitHubUrl?: string;
+  twitterUrl?: string;
+  portfolioUrl?: string;
 }
 
 /* ===== Match User Type ===== */
