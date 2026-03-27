@@ -98,6 +98,17 @@ const updateJob = async (req: Request, res: Response) => {
       { new: true }
     );
 
+    // Remove left-swipers: keep only users who are in matchedUsers (right-swipers)
+    const matchedSet = new Set(
+      (updatedJob.matchedUsers || []).map((id: any) => id.toString())
+    );
+    const filteredSwiped = (updatedJob.swipedUsers || []).filter((id: any) =>
+      matchedSet.has(id.toString())
+    );
+    await Job.findByIdAndUpdate(req.params.id, {
+      $set: { swipedUsers: filteredSwiped },
+    });
+
     const { password, __v, createdAt, ...job } = updatedJob.toObject();
     successResponse(res, job, "Job updated successfully", 200);
   } catch (err) {
@@ -133,9 +144,9 @@ const getAllJobs = async (req: Request, res: Response) => {
   try {
     let jobs;
     if (recent) {
-      jobs = await Job.find().sort({ createdAt: -1 }).limit(2);
+      jobs = await Job.find().sort({ updatedAt: -1 }).limit(2);
     } else {
-      jobs = await Job.find();
+      jobs = await Job.find().sort({ updatedAt: -1 });
     }
     successResponse(res, jobs, "Jobs found", 200);
   } catch (error) {
@@ -249,8 +260,11 @@ const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response)
       if (ms) query.createdAt = { $gte: new Date(Date.now() - ms) };
     }
 
-    // When sortByTime is on, fetch newest-first from DB
-    const mongoSort = filter.sortByTime ? { createdAt: -1 as const } : {};
+    // Always sort by updatedAt desc so updated jobs rank alongside new ones.
+    // sortByTime filter uses createdAt to show strictly newest posts first.
+    const mongoSort = filter.sortByTime
+      ? { createdAt: -1 as const }
+      : { updatedAt: -1 as const };
     let jobs = await Job.find(query).sort(mongoSort) as any[];
 
     // Rank by skill match count descending when skills filter is active
