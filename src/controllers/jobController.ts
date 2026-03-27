@@ -238,9 +238,23 @@ const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response)
       }));
     }
 
-    let jobs = await Job.find(query) as any[];
+    // Posted-within filter
+    if (filter.postedWithin) {
+      const msMap: Record<string, number> = {
+        "24h": 24 * 60 * 60 * 1000,
+        "7d":  7  * 24 * 60 * 60 * 1000,
+        "30d": 30 * 24 * 60 * 60 * 1000,
+      };
+      const ms = msMap[filter.postedWithin];
+      if (ms) query.createdAt = { $gte: new Date(Date.now() - ms) };
+    }
+
+    // When sortByTime is on, fetch newest-first from DB
+    const mongoSort = filter.sortByTime ? { createdAt: -1 as const } : {};
+    let jobs = await Job.find(query).sort(mongoSort) as any[];
 
     // Rank by skill match count descending when skills filter is active
+    // (skills re-ranking is applied on top; if both are on, skills wins final order)
     if (skills.length > 0) {
       const skillsLower = skills.map((s: string) => s.toLowerCase());
       jobs = jobs

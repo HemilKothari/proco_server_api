@@ -50,6 +50,17 @@ const FilterSchema = new Schema(
       default: [],
     },
 
+    sortByTime: {
+      type: Boolean,
+      default: false,
+    },
+
+    postedWithin: {
+      type: String,
+      enum: ["24h", "7d", "30d", ""],
+      default: "",
+    },
+
     agentId: {
       type: Schema.Types.ObjectId,
       ref: "User",

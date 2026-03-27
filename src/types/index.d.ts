@@ -69,6 +69,8 @@ export interface Filter {
   selectedCountry: string;
   customOptions: string[];
   skills: string[];
+  sortByTime: boolean;
+  postedWithin: "24h" | "7d" | "30d" | "";
   agentId: Types.ObjectId;
 }
 export type FilterDocument = HydratedDocument<Filter>;
