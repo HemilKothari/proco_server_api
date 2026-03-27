@@ -230,7 +230,31 @@ const getFilteredJobs = async (req: Request<{ agentId: string }>, res: Response)
       query.country = { $regex: filter.selectedCountry, $options: "i" };
     }
 
-    const jobs = await Job.find(query);
+    // Skills filter — OR logic: job must match at least one selected skill
+    const skills: string[] = (filter.skills || []).filter((s: string) => s.trim() !== "");
+    if (skills.length > 0) {
+      query.$or = skills.map((s: string) => ({
+        requirements: { $regex: s, $options: "i" },
+      }));
+    }
+
+    let jobs = await Job.find(query) as any[];
+
+    // Rank by skill match count descending when skills filter is active
+    if (skills.length > 0) {
+      const skillsLower = skills.map((s: string) => s.toLowerCase());
+      jobs = jobs
+        .map((job) => {
+          const reqs: string[] = (job.requirements || []).map((r: string) => r.toLowerCase());
+          const matchCount = skillsLower.filter((s) =>
+            reqs.some((r) => r.includes(s) || s.includes(r))
+          ).length;
+          return { job, matchCount };
+        })
+        .sort((a, b) => b.matchCount - a.matchCount)
+        .map(({ job }) => job);
+    }
+
     return successResponse(res, jobs, "Jobs found", 200);
   } catch (error) {
     return errorResponse(res, "Failed to fetch filtered jobs", 500);

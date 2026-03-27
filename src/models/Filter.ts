@@ -41,7 +41,12 @@ const FilterSchema = new Schema(
     },
 
     customOptions: {
-      type: [String], // FIXED: was String but default was []
+      type: [String],
+      default: [],
+    },
+
+    skills: {
+      type: [String],
       default: [],
     },
 

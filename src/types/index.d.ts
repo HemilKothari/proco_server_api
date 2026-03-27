@@ -68,6 +68,7 @@ export interface Filter {
   selectedState: string;
   selectedCountry: string;
   customOptions: string[];
+  skills: string[];
   agentId: Types.ObjectId;
 }
 export type FilterDocument = HydratedDocument<Filter>;
