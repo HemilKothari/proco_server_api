@@ -3,27 +3,63 @@ import CryptoJS from "crypto-js";
 import { Request, Response } from "express";
 import { UpdateUserBody } from "../types";
 import { errorResponse, successResponse } from "../utils/response";
+import cloudinary from "../utils/cloudinary";
 
 // ======================== UPDATE USER ========================
 const updateUser = async (
-  req: Request<{}, {}, UpdateUserBody>,
-  res: Response) => 
-  {
-  if (req.body.password ) {
-    req.body.password = CryptoJS.AES.encrypt(
-      req.body.password,
-      process.env.SECRET
-    ).toString();
-  }
-
+  req: Request<{}, {}, UpdateUserBody> & { file?: Express.Multer.File },
+  res: Response
+) => {
   try {
     if (!req.user.id) {
       return errorResponse(res, "User ID is required", 400);
     }
 
+    const updateData: Partial<UpdateUserBody>  = {
+      ...req.body,
+    };
+
+    for (const key of Object.keys(updateData) as (keyof typeof updateData)[]) {
+      if (
+        updateData[key] === undefined ||
+        updateData[key] === null ||
+        updateData[key] === ""
+      ) {
+        delete updateData[key];
+      }
+    }
+
+    if (updateData.password) {
+      updateData.password = CryptoJS.AES.encrypt(
+        updateData.password,
+        process.env.SECRET as string
+      ).toString();
+    }
+
+    if (req.file) {
+      const uploaded: any = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: "user_profiles" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        ).end(req.file.buffer);
+        
+      });
+
+      
+
+      if (!uploaded?.secure_url) {
+        return errorResponse(res, "Image upload failed", 500);
+      }
+
+      updateData.profile = uploaded.secure_url;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.id as string,
-      { $set: req.body },
+      req.user.id,
+      { $set: updateData },
       { new: true }
     );
 
@@ -31,9 +67,12 @@ const updateUser = async (
       return errorResponse(res, "Cannot update user", 404);
     }
 
-    const { password, __v, createdAt, ...others } = (updatedUser as any)._doc;
-    return successResponse(res, { ...others }, "User updated successfully", 200);
+    const { password, __v, createdAt, ...others } =
+      (updatedUser as any)._doc;
+
+    return successResponse(res, others, "User updated successfully", 200);
   } catch (err) {
+    console.error(err);
     return errorResponse(res, "Internal server error", 500);
   }
 };

@@ -40,13 +40,7 @@ const UserSchema = new Schema (
 
     skills: {
       type: [String], // FIXED: Array → string[]
-      default: [
-        "skill 01",
-        "skill 02",
-        "skill 03",
-        "skill 04",
-        "skill 05",
-      ],
+      default: [],
     },
 
     profile: {

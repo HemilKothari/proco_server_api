@@ -154,9 +154,11 @@ export interface LoginUserBody {
 
 /* ===== Update User Type ===== */
 export interface UpdateUserBody {
-  username: string;
-  email: string;
-  password: string;
+  username?: string;
+  email?: string;
+  password?: string;
+  phone?: string;
+  skills?: string[]; 
   college?: string;
   gender?: string;
   branch?: string;
@@ -168,6 +170,7 @@ export interface UpdateUserBody {
   gitHubUrl?: string;
   twitterUrl?: string;
   portfolioUrl?: string;
+  profile?: string;
 }
 
 /* ===== Match User Type ===== */
