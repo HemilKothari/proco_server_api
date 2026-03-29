@@ -1,4 +1,4 @@
-import { HydratedDocument, Types } from "mongoose";
+import mongoose, { HydratedDocument, Types } from "mongoose";
 import jwt from "jsonwebtoken";
 import { Request } from "express";
 
@@ -228,3 +228,9 @@ export interface MessagePayload {
   };
   chat: ChatPayload;
 }
+
+export interface Image {
+  image: Buffer;
+}
+
+export type ImageDocument = mongoose.HydratedDocument<Image>;

@@ -3,6 +3,7 @@ import Filter from "../models/Filter";
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/response";
 import { Types, MongooseError} from "mongoose";
+import { JobDocument } from "../types";
 
 // ======================== CREATE JOB ========================
 const createJob = async (
@@ -28,7 +29,7 @@ const createJob = async (
       city,
       state,
       country,
-    } = req.body;
+    } = req.body as JobDocument;
 
     if (!title || !agentId) {
       return errorResponse(res, "title and agentId are required", 400);
