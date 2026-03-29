@@ -13,6 +13,11 @@ const SwipeSchema = new Schema(
       ref: "User",
       required: true,
     },
+    action: { 
+      type: String, 
+      enum: ["right", "left"], 
+      required: true 
+    },
     swipedAt: {
       type: Date,
       default: Date.now,
@@ -23,6 +28,7 @@ const SwipeSchema = new Schema(
 
 /* ======================== INDEXES ======================== */
 SwipeSchema.index({ jobId: 1, userId: 1 }, { unique: true });
+SwipeSchema.index({ userId: 1, createdAt: -1 });
 
 /* ======================== MODEL ======================== */
 const Swipe = models.Swipe || model("Swipe", SwipeSchema);

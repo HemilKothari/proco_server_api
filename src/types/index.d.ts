@@ -205,6 +205,7 @@ export type AuthenticatedRequest<
 export interface SwipeUserBody {
   jobId: string;
   userId: string;
+  action: "right" | "left";
 }
 
 /* ===== Create Bookmark Type ===== */

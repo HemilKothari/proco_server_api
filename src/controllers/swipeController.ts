@@ -12,15 +12,16 @@ export const addSwipe = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { jobId, userId } = req.body;
+    const { jobId, userId, action } = req.body;
 
-    if (!jobId || !userId) {
-      return errorResponse(res, "jobId and userId are required", 400);
+    if (!jobId || !userId || !action) {
+      return errorResponse(res, "jobId, userId, and action are required", 400);
     }
 
     const newSwipe = new Swipe({
       jobId: new Types.ObjectId(jobId),
       userId: new Types.ObjectId(userId),
+      action: action,
     });
 
     await newSwipe.save();
@@ -56,7 +57,7 @@ export const getSwipesByJob = async (
     if (!job) {
       return errorResponse(res, "Job not found", 404);
     }
-
+    
     const swipedUserIds = job.swipedUsers || [];
 
     if (swipedUserIds.length === 0) {
