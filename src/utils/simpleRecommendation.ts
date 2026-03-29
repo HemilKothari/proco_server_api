@@ -11,6 +11,7 @@ export class SimpleRecommendationService {
     
     // Get jobs user has already swiped on
     const swipedJobIds = await Swipe.distinct('jobId', { userId });
+    console.log(swipedJobIds);
     
     const candidates = await Job.find({
       _id: { $nin: swipedJobIds },
@@ -67,24 +68,4 @@ export class SimpleRecommendationService {
     return score;
   }
   
-//   async logSwipe(userId: string, jobId: string, action: 'right' | 'left') {
-//     // Save swipe
-//     await Swipe.findOneAndUpdate(
-//       { userId, jobId },
-//       { action },
-//       { upsert: true, new: true }
-//     );
-    
-//     // If swipe right, add to job's swipedUsers
-//     if (action === 'right') {
-//       await Job.findByIdAndUpdate(jobId, {
-//         $addToSet: { swipedUsers: userId }
-//       });
-      
-//       // Check if it's a match
-//       const job = await Job.findById(jobId);
-//       // You need to implement logic for when agent swipes on user
-//       // For now, we'll assume matchedUsers is manually updated
-//     }
-//   }
 }

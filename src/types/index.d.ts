@@ -177,6 +177,7 @@ export interface UpdateUserBody {
 export interface MatchUserBody {
   jobId: string;
   userId: string;
+  action: "right" | "left";
 }
 
 /* ===== Send Message Type ===== */
@@ -205,7 +206,7 @@ export type AuthenticatedRequest<
 export interface SwipeUserBody {
   jobId: string;
   userId: string;
-  action: "right" | "left";
+  action?: "right" | "left";
 }
 
 /* ===== Create Bookmark Type ===== */
