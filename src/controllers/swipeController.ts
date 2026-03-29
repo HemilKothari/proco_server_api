@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { Types, Error as MongooseError } from "mongoose";
+import { Types} from "mongoose";
+import { MongoServerError } from "mongodb";
 import Swipe from "../models/Swipe";
 import { SwipeUserBody } from "../types";
 import { errorResponse, successResponse } from "../utils/response";
@@ -12,26 +13,34 @@ export const addSwipe = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { jobId, userId } = req.body;
+    const { jobId, userId, action } = req.body;
 
-    if (!jobId || !userId) {
-      return errorResponse(res, "jobId and userId are required", 400);
+    if (!jobId || !userId || !action) {
+      return errorResponse(res, "jobId, userId, and action are required", 400);
     }
 
+    const jobObjectId = new Types.ObjectId(jobId);
+    const userObjectId = new Types.ObjectId(userId);
+
     const newSwipe = new Swipe({
-      jobId: new Types.ObjectId(jobId),
-      userId: new Types.ObjectId(userId),
+      jobId: jobObjectId,
+      userId: userObjectId,
+      action: action,
     });
 
     await newSwipe.save();
 
+    if (action === "right") {
+      await Job.findByIdAndUpdate(jobObjectId, {
+        $addToSet: { swipedUsers: userObjectId },
+      });
+    }
+
+    console.log("Swipe saved + job updated:", newSwipe);
+
     return successResponse(res, newSwipe, "User swiped successfully", 201);
   } catch (error: unknown) {
-    if (
-      error instanceof MongooseError &&
-      "code" in error &&
-      error.code === 11000
-    ) {
+    if (error instanceof MongoServerError && error.code === 11000) {
       return errorResponse(res, "User already swiped for this job", 409);
     }
 
@@ -56,7 +65,7 @@ export const getSwipesByJob = async (
     if (!job) {
       return errorResponse(res, "Job not found", 404);
     }
-
+    
     const swipedUserIds = job.swipedUsers || [];
 
     if (swipedUserIds.length === 0) {

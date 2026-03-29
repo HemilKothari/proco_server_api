@@ -61,6 +61,8 @@ const UserSchema = new Schema (
     gitHubUrl: { type: String, default: '' },
     twitterUrl: { type: String, default: '' },
     portfolioUrl: { type: String, default: '' },
+    interests: { type: [String], default: [] },
+    hobbies: { type: [String], default: [] },
 
     isFirstTimeUser: {
       type: Boolean,

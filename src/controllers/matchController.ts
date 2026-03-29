@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { MongoServerError } from 'mongodb';
 import Match from "../models/Match";
+import Job from "../models/Job";
 import { MatchUserBody } from "../types";
 import { errorResponse, successResponse } from "../utils/response";
 
@@ -11,11 +12,14 @@ export const addMatch = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { jobId, userId } = req.body;
+    const { jobId, userId, action } = req.body;
 
     if (!jobId || !userId) {
       return errorResponse(res, "jobId and userId are required", 400);
     }
+
+    const jobObjectId = new Types.ObjectId(jobId);
+    const userObjectId = new Types.ObjectId(userId);
 
     const newMatch = new Match({
       jobId: new Types.ObjectId(jobId),
@@ -24,15 +28,20 @@ export const addMatch = async (
 
     await newMatch.save();
 
-    return successResponse(res, newMatch, "User matched successfully", 201);
-  } catch (error: unknown) {
-    // ✅ MongoServerError is what the driver actually throws for duplicate keys
-    if (error instanceof MongoServerError && error.code === 11000) {
-      return errorResponse(res, "User already matched for this job", 409);
+    if (action === "right") {
+      await Job.findByIdAndUpdate(jobObjectId, {
+        $addToSet: { matchedUsers: userObjectId },
+      });
     }
 
-    console.error("Error adding match:", error);
-    return errorResponse(res, "Internal server error", 500);
+    return successResponse(res, newMatch, "User matched successfully", 201);
+  } catch (error: unknown) {
+  if (error instanceof MongoServerError && error.code === 11000) {
+    return errorResponse(res, "User already matched for this job", 409);
+  }
+
+  console.error("Error adding match:", error);
+  return errorResponse(res, "Internal server error", 500);
   }
 };
 

@@ -8,6 +8,7 @@ import { swipeRouter } from "./swipe";
 import { messageRouter } from "./messages";
 import { userRouter } from "./user";
 import { bookmarkRoute } from "./bookmark";
+import { recommendationRouter } from "./recommendation";
 
 
 export const router = Router();
@@ -21,3 +22,4 @@ router.use("/api/messages", messageRouter);
 router.use("/api/filters", filterRouter);
 router.use("/api/matches", matchRouter);
 router.use("/api/swipes", swipeRouter);
+router.use("/api/recommendations", recommendationRouter);

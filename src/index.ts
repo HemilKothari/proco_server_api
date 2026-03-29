@@ -1,5 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
+
+import bodyParser from "body-parser";
 import { connectDB } from "./config/db";
 import { router } from "./routes";
 import setupSocket from "./socket/socket";
@@ -17,7 +19,11 @@ connectDB();
 // ======================== MIDDLEWARE ========================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(
+  bodyParser.json({
+    limit: "10mb", // For parsing large Base64 strings
+  })
+);
 // ======================== ROUTES ========================
 app.use("/", router);
 

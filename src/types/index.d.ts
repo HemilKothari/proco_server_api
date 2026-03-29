@@ -1,4 +1,4 @@
-import { HydratedDocument, Types } from "mongoose";
+import mongoose, { HydratedDocument, Types } from "mongoose";
 import jwt from "jsonwebtoken";
 import { Request } from "express";
 
@@ -177,6 +177,7 @@ export interface UpdateUserBody {
 export interface MatchUserBody {
   jobId: string;
   userId: string;
+  action: "right" | "left";
 }
 
 /* ===== Send Message Type ===== */
@@ -205,6 +206,7 @@ export type AuthenticatedRequest<
 export interface SwipeUserBody {
   jobId: string;
   userId: string;
+  action?: "right" | "left";
 }
 
 /* ===== Create Bookmark Type ===== */
@@ -227,3 +229,9 @@ export interface MessagePayload {
   };
   chat: ChatPayload;
 }
+
+export interface Image {
+  image: Buffer;
+}
+
+export type ImageDocument = mongoose.HydratedDocument<Image>;
