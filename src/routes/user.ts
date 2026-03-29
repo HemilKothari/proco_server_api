@@ -10,7 +10,7 @@ const userRouter = Router();
 userRouter.get("/",verifyTokenAndAuthorization, getUser);
 
 // UPADATE USER
-userRouter.put("/update",verifyToken, upload.single("image"),updateUser);
+userRouter.put("/update",verifyToken, upload.single("profile"),updateUser);
 
 // DELETE USER
 userRouter.delete("/", verifyTokenAndAuthorization, deleteUser);

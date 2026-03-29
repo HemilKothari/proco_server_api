@@ -4,10 +4,11 @@ import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/response";
 import { Types, MongooseError} from "mongoose";
 import { JobDocument } from "../types";
+import cloudinary from "../utils/cloudinary";
 
 // ======================== CREATE JOB ========================
 const createJob = async (
-  req: Request,
+  req: Request & { file?: Express.Multer.File },
   res: Response
 ): Promise<Response> => {
   try {
@@ -53,6 +54,40 @@ const createJob = async (
       );
     }
 
+    // Upload image to Cloudinary if a file was attached
+    let resolvedImageUrl = imageUrl || "";
+    if (req.file) {
+      const uploaded: any = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: "job_images" },
+          (error, result) => {
+            if (error) {
+              console.error("Cloudinary upload error:", error);
+              return reject(error);
+            }
+            resolve(result);
+          }
+        ).end(req.file!.buffer);
+      });
+
+      if (!uploaded?.secure_url) {
+        return errorResponse(res, "Image upload failed", 500);
+      }
+      resolvedImageUrl = uploaded.secure_url;
+    }
+
+    // Multipart sends everything as strings — normalise types
+    let parsedRequirements: string[] = [];
+    if (Array.isArray(requirements)) {
+      parsedRequirements = requirements;
+    } else if (typeof requirements === "string") {
+      try { parsedRequirements = JSON.parse(requirements); } catch { parsedRequirements = []; }
+    }
+
+    const parsedHiring = typeof hiring === "boolean"
+      ? hiring
+      : String(hiring).toLowerCase() === "true";
+
     const newJob = new Job({
       title,
       agentId: new Types.ObjectId(agentId),
@@ -60,10 +95,10 @@ const createJob = async (
       description: description || "",
       salary: salary || "",
       period: period || "",
-      hiring: hiring ?? false,
+      hiring: parsedHiring,
       contract: contract || "",
-      requirements: requirements || [],
-      imageUrl: imageUrl || "",
+      requirements: parsedRequirements,
+      imageUrl: resolvedImageUrl,
       domain: domain || "",
       opportunityType: opportunityType || "",
       pincode: pincode || "",

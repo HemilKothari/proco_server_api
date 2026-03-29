@@ -158,7 +158,7 @@ export interface UpdateUserBody {
   email?: string;
   password?: string;
   phone?: string;
-  skills?: string[]; 
+  skills?: string[] | string;
   college?: string;
   gender?: string;
   branch?: string;

@@ -15,9 +15,18 @@ const updateUser = async (
       return errorResponse(res, "User ID is required", 400);
     }
 
-    const updateData: Partial<UpdateUserBody>  = {
+    const updateData: Partial<UpdateUserBody> = {
       ...req.body,
     };
+
+    // skills arrives as a JSON-encoded string from multipart — parse it back to array
+    if (typeof updateData.skills === 'string') {
+      try {
+        updateData.skills = JSON.parse(updateData.skills);
+      } catch {
+        updateData.skills = [];
+      }
+    }
 
     for (const key of Object.keys(updateData) as (keyof typeof updateData)[]) {
       if (

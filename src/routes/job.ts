@@ -2,10 +2,11 @@ import { Router } from "express";
 import { createJob, updateJob, deleteJob, getJob, getAllJobs, searchJobs, getUserJobs, getFilteredJobs } from "../controllers/jobController";
 
 import { verifyTokenAndAgent } from "../middleware/verifyToken";
+import upload from "../middleware/multer";
 const jobRouter = Router();
 
 // CREATE JOB
-jobRouter.post("/", createJob);
+jobRouter.post("/", upload.single("image"), createJob);
 
 // UPADATE JOB
 jobRouter.put("/:id", verifyTokenAndAgent, updateJob);
